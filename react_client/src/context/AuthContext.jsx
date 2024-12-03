@@ -21,8 +21,7 @@ export const AuthProvider = ({ children }) => {
 
     if (loadingUser) {
         return (
-            // <div>Loading...</div>
-            <div></div>
+            <div>Loading...</div>
         );
     }
     else {

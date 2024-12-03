@@ -12,9 +12,9 @@ import {
     reauthenticateWithCredential
 } from 'firebase/auth';
 
-async function docreateUserWithEmailAndPassword(email, password, displayName){
+async function doCreateUserWithEmailAndPassword(email, password, displayName){
     const auth = getAuth();
-    await createUserWithEmailAndPassword(email, password);
+    await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(auth.currentUser, {displayName: displayName}); 
 }
 
@@ -52,6 +52,6 @@ export {
     doPasswordReset,
     doSignOut,
     doSocialSignIn,
-    docreateUserWithEmailAndPassword,
+    doCreateUserWithEmailAndPassword,
     doSignInWithEmailAndPassword,
 }
