@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import Navigation from './components/Navigation';
 
 function App() {
 
@@ -13,10 +14,7 @@ function App() {
     <AuthProvider>
       <div className='App'>
         <header className='App-header'>
-          <h1 className='App-title'>Website Name</h1>
-          <div className='nav-links'>
-            <Link className='profileLink' to='/profile'>Profile</Link>
-          </div>
+          <Navigation />
         </header>
         <Routes>
           <Route path='/home' element={<PrivateRoute />}>
