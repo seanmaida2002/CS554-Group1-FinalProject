@@ -36,7 +36,7 @@ function Login() {
     return (
         <div>
             <div className="card">
-                <h1>Log-In</h1>
+                <h1>Log In</h1>
                 <form className="login-form" onSubmit={handleLogin}>
                     <div className="login-form-group">
                         <label>
@@ -59,14 +59,14 @@ function Login() {
                             <input
                             name='password'
                             type='password'
-                            placeholder="Passwrd"
+                            placeholder="Password"
                             required
                             autoComplete="off" />
                         </label>
                     </div>
-
                     <button className="button" type="submit">Log In</button>
-
+                    <br />
+                    <br />
                     <button className="forgotPassword" onClick={passwordReset}>Forgot Password</button>
                 </form>
                 <br />

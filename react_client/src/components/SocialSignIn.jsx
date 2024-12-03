@@ -5,7 +5,7 @@ const SocialSignIn = () => {
         try{
             await doSocialSignIn();
         } catch(e){
-            alert(e);
+            console.log(e);
         }
     };
 
@@ -14,7 +14,7 @@ const SocialSignIn = () => {
             <img
             onClick={socialSignOn}
             alt='google signin'
-            src='./public/imgs/btn_google_signin.png' />
+            src='./imgs/btn_google_signin.png' />
         </div>
     );
 }

@@ -11,7 +11,7 @@ function Register() {
 
     const handleSignUp = async (e) => {
         e.preventDefault();
-        const {displayName, email, passworOne, passwordTwo} = e.target.elements;
+        const {firstName, lastName, email, passwordOne, passwordTwo} = e.target.elements;
 
         if(passwordOne.value !== passwordTwo.value){
             setPWMatch("Passwords do not Match!");
@@ -21,7 +21,8 @@ function Register() {
         }
 
         try{
-            await doCreateUserWithEmailAndPassword(email.value, passwordOne.value, displayName.value);
+            const displayName = firstName.value + " " + lastName.value;
+            await doCreateUserWithEmailAndPassword(email.value, passwordOne.value, displayName);
         } catch(e){
             alert(e);
         }
@@ -47,6 +48,7 @@ function Register() {
                         autoFocus={true} />
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Last Name:
@@ -58,6 +60,7 @@ function Register() {
                         placeholder='Duck' />
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Date of Birth:
@@ -68,6 +71,7 @@ function Register() {
                         placeholder='MM/YY/YYY'/>
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Phone Number:
@@ -75,9 +79,10 @@ function Register() {
                         <input className='register-form-control' 
                         required name='phoneNumber' 
                         type='text' 
-                        placeholder='Phone Humber' />
+                        placeholder='Phone Number' />
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Email:
@@ -88,6 +93,7 @@ function Register() {
                         placeholder='attila@gmail.com' />
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Username:
@@ -98,6 +104,7 @@ function Register() {
                         placeholder='atilla2024'/>
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Password:
@@ -110,6 +117,7 @@ function Register() {
                         autoComplete='off'/>
                     </label>
                 </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         Confirm Password:

@@ -24,10 +24,11 @@ function ChangePassword() {
     };
     
     if(currentUser.providerData[0].providerId === 'password'){
+        console.log(currentUser);
         return (
             <div>
                 {pwMatch && <h4 className='error'>{pwMatch}</h4>}
-                <h2>Hi {currentUser.firstName}, Change Your Password Below</h2>
+                <h2>Hi {currentUser.displayName}, Change Your Password Below</h2>
                 <form onSubmit={submitForm}>
                     <div className='changePassword-form-group'>
                         <label>
