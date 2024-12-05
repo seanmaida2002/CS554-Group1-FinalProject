@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {Navigate} from 'react-router-dom';
 import {AuthContext} from '../context/AuthContext';
 import {doCreateUserWithEmailAndPassword} from '../firebase/FirebaseFunctions';
+import { Link } from 'react-router-dom';
 
 import SocialSignIn from './SocialSignIn';
 
@@ -14,7 +15,7 @@ function Register() {
         const {firstName, lastName, email, passwordOne, passwordTwo} = e.target.elements;
 
         if(passwordOne.value !== passwordTwo.value){
-            setPWMatch("Passwords do not Match!");
+            setPWMatch("Passwords Do Not Match!");
             return false;
         } else{
             setPWMatch('');
@@ -35,6 +36,7 @@ function Register() {
     return (
         <div className='card'>
             <h1>Register</h1>
+            <p>Already have an account? <Link to='/login' className='sign-up'>Log In</Link></p>
             {pwMatch && <h4 className='error'>{pwMatch}</h4>}
             <form onSubmit={handleSignUp}>
                 <div className='register-form'>

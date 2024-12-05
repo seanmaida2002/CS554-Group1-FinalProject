@@ -3,6 +3,7 @@ import SocialSignIn from "./SocialSignIn";
 import {Navigate} from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext";
 import { doSignInWithEmailAndPassword, doPasswordReset } from "../firebase/FirebaseFunctions";
+import { Link } from "react-router-dom";
 
 function Login() {
     const {currentUser} = useContext(AuthContext);
@@ -37,6 +38,8 @@ function Login() {
         <div>
             <div className="card">
                 <h1>Log In</h1>
+                <p >Don't have an account yet? <Link to='/register' className="sign-up">Sign Up</Link></p>
+                <br />
                 <form className="login-form" onSubmit={handleLogin}>
                     <div className="login-form-group">
                         <label>
