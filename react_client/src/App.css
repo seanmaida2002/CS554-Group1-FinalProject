@@ -95,11 +95,12 @@
     justify-content: center;
 }
 
+.login-form,
+.changePassword-form-group,
 .register-form {
     input {
         font-family: "Poppins", sans-serif;
         color: black;
-        /* margin-bottom: 0.5rem; */
         background-color: white;
         height: 1.5rem;
         border: 1px #222121 solid;
@@ -120,32 +121,8 @@
     }
 }
 
-.login-form {
-    input {
-        font-family: "Poppins", sans-serif;
-        color: black;
-        /* margin-bottom: 0.5rem; */
-        background-color: white;
-        height: 1.5rem;
-        border: 1px #222121 solid;
-        border-radius: 0.25rem;
-        padding: 0.25rem 1rem;
-        transition: 0.1s ease-in-out all;
-
-        &:hover {
-            border-color: darkblue;
-        }
-
-        &:focus {
-            outline: none;
-            border-color: darkblue;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.638);
-            box-shadow: 0 1px 3px darkblue;
-        }
-    }
-}
-
-.button {
+.button,
+.changePassword-button {
     width: 7rem;
     font-family: "Poppins", sans-serif;
     align-self: center;
@@ -170,3 +147,44 @@
         padding: 0.25rem 0.5rem;
     }
 }
+
+.button {
+    height: 2rem;
+
+    &:hover {
+        height: 2rem;
+    }
+}
+
+.changePassword-button {
+    height: 3rem;
+
+    &:hover {
+        height: 3rem;
+    }
+}
+
+.sign-up {
+    text-decoration: none;
+    color: black;
+}
+
+.sign-up:hover {
+    border-bottom: 2px solid darkblue;
+}
+
+.popup {
+    margin: auto;
+    background: rgb(255, 255, 255);
+    width: 100%;
+    padding: 5px;
+}
+
+.popup-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+[role='tooltip'].popup {
+    width: 200px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 3px;
+  }
