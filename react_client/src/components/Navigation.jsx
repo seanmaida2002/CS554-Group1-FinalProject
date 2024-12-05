@@ -32,9 +32,6 @@ const NavigationNonAuth = () => { //only display these links in the navigation b
                     <NavLink to='/home'>Home</NavLink>
                 </li>
                 <li>
-                    <NavLink to='/register'>Register</NavLink>
-                </li>
-                <li>
                     <NavLink to='/login'>Log In</NavLink>
                 </li>
             </ul>

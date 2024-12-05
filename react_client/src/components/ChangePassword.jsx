@@ -11,6 +11,7 @@ function ChangePassword() {
         e.preventDefault();
         const {currentPassword, newPasswordOne, newPasswordTwo} = e.target.elements;
 
+
         if(newPasswordOne.value !== newPasswordTwo.value){
             setPWMatch('New Passwords do not match, please try again!');
             return false;
@@ -27,12 +28,12 @@ function ChangePassword() {
         console.log(currentUser);
         return (
             <div>
-                {pwMatch && <h4 className='error'>{pwMatch}</h4>}
                 <h2>Hi {currentUser.displayName}, Change Your Password Below</h2>
                 <form onSubmit={submitForm}>
                     <div className='changePassword-form-group'>
                         <label>
                             Current Password:
+                            <br />
                             <input
                             className='changePassword-form-control'
                             name='currentPassword'
@@ -43,9 +44,11 @@ function ChangePassword() {
                             required />
                         </label>
                     </div>
+                    <br />
                     <div className='changePassword-form-group'>
                         <label>
-                            New Password
+                            New Password:
+                            <br />
                             <input
                             className='changePassword-form-control'
                             name='newPasswordOne'
@@ -56,9 +59,11 @@ function ChangePassword() {
                             required />
                         </label>
                     </div>
+                    <br />
                     <div className='changePassword-form-group'>
                         <label>
                             Confirm New Password:
+                            <br />
                             <input
                             className='changePassword-form-control'
                             name='newPasswordTwo'
@@ -69,17 +74,17 @@ function ChangePassword() {
                             required />
                         </label>
                     </div>
-
-                    <button className='button' type='submit'>Change Password</button>
+                    {pwMatch && <h4 className='error'>{pwMatch}</h4>}
+                    <button className='changePassword-button' type='submit'>Change Password</button>
                 </form>
-                <br />
             </div>
         );
-    } else{
+    } 
+    else{
         return (
             <div>
                 <h2>
-                    {currentUser.firstName}, You are signed in using Google, You cannot change your password.
+                    {currentUser.displayName}, You are signed in using Google, You cannot change your password.
                 </h2>
             </div>
         );
