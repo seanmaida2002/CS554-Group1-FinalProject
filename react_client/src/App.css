@@ -187,4 +187,43 @@
 [role='tooltip'].popup {
     width: 200px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 3px;
-  }
+}
+
+#profile-personal-image {
+    img {
+        width: 10rem;
+        border-radius: 50%;
+    }
+}
+
+.profile-container {
+    min-width: auto;
+    height: auto;
+    border-radius: 2rem;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+#profile-fullName {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+#profile-username,
+#profile-dateOfBirth,
+#profile-phoneNumber,
+#profile-email {
+    font-weight: bold;
+}
+
+.navigation-profile {
+    width: 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: 0.2s ease-in-out all;
+}

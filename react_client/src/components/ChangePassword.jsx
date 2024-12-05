@@ -25,7 +25,6 @@ function ChangePassword() {
     };
     
     if(currentUser.providerData[0].providerId === 'password'){
-        console.log(currentUser);
         return (
             <div>
                 <h2>Hi {currentUser.displayName}, Change Your Password Below</h2>

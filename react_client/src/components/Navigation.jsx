@@ -17,7 +17,8 @@ const NavigationAuth = () => { //only display these links in the navigation bar 
                     <NavLink to='/home'>Home</NavLink>
                 </li>
                 <li className='navbar-links'>
-                    <NavLink to='/profile'>Profile</NavLink>
+                    
+                    <NavLink to='/profile'><img className='navigation-profile' alt='profile image' src='./imgs/profile-icon-white.png'/> </NavLink>
                 </li>
             </ul>
         </nav>
