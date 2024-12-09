@@ -36,7 +36,7 @@ export function checkValidUsername(param) {
     const usernameRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
     if (param.length < 3 || param.length > 12) {
-        throw 'username is too long or too short';
+        throw 'username has to at least 2 characters but less than 12 characters';
     }
 
     if (usernameRegex.test(param)) {
@@ -94,7 +94,7 @@ export function checkDate (date, varName){
     date = date.trim();
     
     const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
-    if(!regex.text(date)){
+    if(!regex.test(date)){
         throw `Error: ${varName} must be in the correct MM/DD/YYYY format`;
     }
 
