@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import ReactModal from 'react-modal';
+import axios from 'axios';
+import { getAuth } from 'firebase/auth';
+import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
 ReactModal.setAppElement('#root');
 const customStyles = {
@@ -20,6 +23,7 @@ const customStyles = {
 function EditProfileModal(props) {
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [profile, setProfile] = useState(props.profile);
+    const [error, setError] = useState('');
     //get profile information from server
     //edit profile from data functions
 
@@ -37,7 +41,73 @@ function EditProfileModal(props) {
     let phoneNumber;
     let email;
 
-    return(
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            //Error Checking
+            let firstNameError = checkValidName(firstName.value.trim(), 'First Name')
+            if (firstNameError !== firstName.value.trim()) {
+                setError(firstNameError);
+                return;
+            }
+            let lastNameError = checkValidName(lastName.value.trim(), 'Last Name');
+            if (lastNameError !== lastName.value.trim()) {
+                setError(lastNameError);
+                return;
+            }
+            let dobError = checkDate(dateOfBirth.value.trim(), "Date of Birth");
+            if (dobError !== dateOfBirth.value.trim()) {
+                setError(dobError);
+                return;
+            }
+            let phoneNumberError = checkPhoneNumber(phoneNumber.value.trim(), "Phone Number");
+            if (phoneNumberError !== phoneNumber.value.trim()) {
+                setError(phoneNumberError);
+                return;
+            }
+            let emailError = checkValidEmail(email.value.trim(), "Email");
+            if (emailError !== email.value.trim()) {
+                setError(emailError);
+                return;
+            }
+            let usernameError = checkValidUsername(username.value.trim());
+            if (usernameError !== username.value.trim()) {
+                setError(usernameError);
+                return;
+            }
+            let validAge = checkValidAge(dateOfBirth.value.trim(), "Date of Birth");
+            if (validAge !== true) {
+                setError(validAge);
+                return;
+            }
+
+            const updateProfile = {
+                firstName: firstName.value,
+                lastName: lastName.value,
+                username: username.value,
+                email: email.value,
+                phoneNumber: phoneNumber.value,
+                dateOfBirth: dateOfBirth.value
+            };
+
+            const auth = getAuth();
+            const firebaseUid = auth.currentUser.uid;
+            const update = await axios.patch(`http://localhost:3000/user/${firebaseUid}`, updateProfile);
+
+            alert("Profile Updated Successfully");
+            props.onProfileUpdate(update.data);
+            setProfile(update.data);
+            handleCloseEditModal();
+        } catch (e) {
+            if (e.response && e.response.data) {
+                setError(e.response.data.error);
+            }
+            alert(e);
+        }
+    };
+
+    return (
         <div>
             <ReactModal
                 name='editModal'
@@ -50,7 +120,7 @@ function EditProfileModal(props) {
                     id='edit-profile'
                     onSubmit={(e) => {
                         e.preventDefault();
-                        
+
 
                         firstName.value = '';
                         lastName.value = '';
@@ -59,12 +129,13 @@ function EditProfileModal(props) {
                         email.value = '';
                         dateOfBirth.value = '';
                         setShowEditModal(false);
-                        
+
                         alert('Profile Updated');
                         props.handleClose();
                     }}
                 >
                     <div className='editProfile-form'>
+                    {error && <h4 className='error'>{error}</h4>}
                         <label>
                             First Name:
                             <br />
@@ -73,7 +144,7 @@ function EditProfileModal(props) {
                                     firstName = node;
                                 }}
                                 defaultValue={profile.firstName}
-                                autoFocus={true} 
+                                autoFocus={true}
                             />
                         </label>
                     </div>
@@ -103,6 +174,7 @@ function EditProfileModal(props) {
                             />
                         </label>
                     </div>
+                    <br />
                     <div className='editProfile-form'>
                         <label>
                             Phone Number:
@@ -118,17 +190,17 @@ function EditProfileModal(props) {
                     <br />
                     <div className='editProfile-form'>
                         <label>
-                            Email:
+                            Email: {profile.email}
                             <br />
                             <input
                                 ref={(node) => {
                                     email = node;
                                 }}
+                                style={{ visibility: 'hidden' }}
                                 defaultValue={profile.email}
                             />
                         </label>
                     </div>
-                    <br />
                     <div className='editProfile-form'>
                         <label>
                             Username:
@@ -143,7 +215,7 @@ function EditProfileModal(props) {
                     </div>
                     <br />
                     <br />
-                    <button className='button' type='submit'>Update Profile</button>
+                    <button className='changePassword-button' onClick={handleSubmit} type='submit'>Update Profile</button>
                 </form>
                 <button className='button' onClick={handleCloseEditModal}>Cancel</button>
             </ReactModal>
