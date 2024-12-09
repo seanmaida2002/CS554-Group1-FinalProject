@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import '../App.css';
 import SignOutButton from "./SignOut";
 import ChangePassword from "./ChangePassword";
 import Popup from 'reactjs-popup';
 import EditProfileModal from "./EditProfileModal";
+import axios from 'axios';
+import { AuthContext } from "../context/AuthContext";
 
 function Profile() {
     const [buttonPopup, setButtonPopup] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editProfile, setEditProfile] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const {currentUser} = useContext(AuthContext);
 
     const handleOpenEditModal = (profile) => {
         setShowEditModal(true);
@@ -19,18 +24,46 @@ function Profile() {
         setShowEditModal(false);
     };
 
+    const handleProfileUpdate = (profile) => {
+        setUserProfile(profile);
+    }
+
+    useEffect(() => {
+        if (currentUser) {
+            const fetchUserProfile = async () => {
+                try {
+                    const { data: user } = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                    setUserProfile(user);
+                    setLoading(false);
+                } catch (e) {
+                    console.log('Error fetching user profile');
+                }
+            };
+            fetchUserProfile();
+        }
+        
+    }, [currentUser]);
+
+    if (loading) {
+        return (
+            <div>
+                <h2>Loading...</h2>
+            </div>
+        );
+    }
+
     return (
         <div className="card">
             <div className="profile-container">
                 <div id="profile-personal-image"><img alt="profile-icon" src='./imgs/profile-icon-black.png' /></div>
-                <div id="profile-fullName">First Name Last Name</div>
-                <div id='profile-username'>@username</div>
+                <div id="profile-fullName">{`${userProfile.firstName} ${userProfile.lastName}`}</div>
+                <div id='profile-username'>@{`${userProfile.username}`}</div>
                 <br />
-                <div id="profile-dateOfBirth">Date of Birth: MM/DD/YY</div>
-                <div id='profile-phoneNumber'>Phone Number: 5555555555</div>
-                <div id='profile-email'>Email: sample@gmail.com</div>
+                <div id="profile-dateOfBirth">Date of Birth: {`${userProfile.dateOfBirth}`}</div>
+                <div id='profile-phoneNumber'>Phone Number: {`${userProfile.phoneNumber}`}</div>
+                <div id='profile-email'>Email: {`${userProfile.email}`}</div>
                 <br />
-                <button className="button" onClick={() => handleOpenEditModal(profile)}>Edit</button>
+                <button className="button" onClick={() => handleOpenEditModal(userProfile)}>Edit</button>
                 <button className="changePassword-button" onClick={() => setButtonPopup(true)}>Change Password</button>
                 <Popup open={buttonPopup} closeOnDocumentClick onClose={() => setButtonPopup(false)} modal >
                     {(close) => (
@@ -45,11 +78,12 @@ function Profile() {
                 <SignOutButton />
             </div>
             {showEditModal && (
-                    <EditProfileModal
-                        isOpen={showEditModal}
-                        profile={editProfile}
-                        handleClose={handleCloseModals}
-                    />
+                <EditProfileModal
+                    isOpen={showEditModal}
+                    profile={editProfile}
+                    handleClose={handleCloseModals}
+                    onProfileUpdate={handleProfileUpdate}
+                />
             )}
         </div>
     )
