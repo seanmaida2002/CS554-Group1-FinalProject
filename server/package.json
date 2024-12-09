@@ -6,12 +6,15 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "seed": "node tasks/seed.js"
   },
   "author": "Sean Maida 20006699",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.1",
-    "mongodb": "^6.11.0"
+    "mongodb": "^6.11.0",
+    "xss": "^1.0.15"
   }
 }

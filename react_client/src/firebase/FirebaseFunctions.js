@@ -9,7 +9,7 @@ import {
     GoogleAuthProvider,
     sendPasswordResetEmail,
     EmailAuthProvider,
-    reauthenticateWithCredential
+    reauthenticateWithCredential,
 } from 'firebase/auth';
 
 async function doCreateUserWithEmailAndPassword(email, password, displayName){

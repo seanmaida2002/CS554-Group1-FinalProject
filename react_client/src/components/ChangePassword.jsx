@@ -19,6 +19,7 @@ function ChangePassword() {
 
         try{
             await doChangePassword(currentUser.email, currentPassword.value, newPasswordOne.value);
+            alert("Password Changed");
         } catch(e){
             alert(e);
         }

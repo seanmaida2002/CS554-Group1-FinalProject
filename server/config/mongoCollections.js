@@ -13,4 +13,4 @@ const getCollectionFn = (collection) => {
     };
 };
 
-export const users = getCollection('users');
+export const users = getCollectionFn('users');
