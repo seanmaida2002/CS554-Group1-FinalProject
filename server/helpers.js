@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { users } from "./config/mongoCollections.js";
 
 export function checkString(param, name) {
     if (param === undefined || typeof param !== "string") {
@@ -9,7 +10,7 @@ export function checkString(param, name) {
         throw `${name} cannot be an empty string`;
     }
 
-    return param;
+    return param.trim();
 }
 
 export function checkValidEmail(email, name) {
@@ -153,4 +154,66 @@ export function checkDateOfBirth(dob, varName){
     }
     checkDate(dob, varName);
     checkValidAge(dob, varName);
+}
+
+export function checkValidEventName(eventName, variableName){
+    if(eventName === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof eventName !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    eventName = eventName.trim();
+    if(eventName.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+    // Anymore restrictions on event names?
+    return eventName
+}
+
+export function checkValidSport(sport, variableName){
+    if(sport === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof sport !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    sport = sport.trim();
+    if(sport.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+
+    // Need a list of valid sports to validate the sport input    
+    // const sports = ['basketball', 'roller hockey', 'ice hockey', 'soccer', 'baseball', 'softball', 'pickle ball']
+    return sport;
+}
+
+export function checkValidEventSize(eventSize, variableName){
+    if(eventSize === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof eventSize !== 'number') throw `Error: ${variableName || "provided variable"} is not a number.`;
+    if(!Number.isInteger(eventSize)) throw `Error: ${variableName || "provided variable"} must be an integer.`;
+    if(eventSize <= 0) throw `Error: ${variableName || "provided variable"} must be greater than 0.`;
+
+    return eventSize;
+}
+
+
+export async function checkValidEventOrganizer(user){
+    user = checkString(user, 'user id')
+    const userCollection = await users();
+    const userFound = await userCollection.findOne({ firebaseUid: user });
+
+    if (!userFound) throw `No user with that id`;
+
+    return user;
+}
+
+export function checkValidTags(tags, variableName){
+    if(tags === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(!Array.isArray(tags)) throw `Error: ${variableName || "provided variable"} is not an array.`;
+
+    tags = tags.map((x) => {
+        x = checkString(x, `Error: an item of ${variableName || "provided variable"}`);
+        return x;
+    });
+
+    return tags;
+}
+
+export function checkValidLocation(location, variableName){
+    if(location === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof location !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    location = location.trim();
+    if(location.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+
+    // How else are we validating location, is it the name of the venue or the address?
+    return location;
 }
