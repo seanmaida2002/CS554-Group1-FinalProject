@@ -2,7 +2,6 @@ import { events, users } from "../config/mongoCollections.js";
 import xss from "xss";
 import { checkString, checkID, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser } from "../helpers.js";
 import { ObjectId } from "mongodb";
-import { status } from "init";
 
 export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description /*, image */) => {
     // Error Checking
@@ -79,13 +78,10 @@ export const deleteEventById = async (id) => {
         {$pull: {eventsMade: eventDeleted._id.toString()}}, 
         { returnDocument: "after" });
 
-    // Test this once we have the ability for users to sign up for an event
-    for(let userId in eventDeleted.usersSignedUp){
-        await usersCollection.findOneAndUpdate(
-            {firebaseUid: userId}, 
-            {$pull: {eventsAttending: eventDeleted._id.toString()}}, 
-            { returnDocument: "after" });
-    }
+    await usersCollection.updateMany(
+        {firebaseUid: {$in: eventDeleted.usersSignedUp}},
+        {$pull: {eventsAttending: eventDeleted._id.toString()}}
+    )
 
     return eventDeleted;
 };
