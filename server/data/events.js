@@ -78,7 +78,6 @@ export const deleteEventById = async (id) => {
         {$pull: {eventsMade: eventDeleted._id.toString()}}, 
         { returnDocument: "after" });
 
-    // Test this once we have the ability for users to sign up for an event
     await usersCollection.updateMany(
         {firebaseUid: {$in: eventDeleted.usersSignedUp}},
         {$pull: {eventsAttending: eventDeleted._id.toString()}}
