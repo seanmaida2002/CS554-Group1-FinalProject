@@ -1,7 +1,7 @@
 import { Router } from "express";
 import xss from "xss";
-import { getAllEvents, createEvent, getEventById, deleteEventById, updateEvent } from "../data/events.js";
-import { checkString, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidEventOrganizer, checkID } from "../helpers.js";
+import { getAllEvents, createEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
+import { checkString, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
 const router = Router();
 
 router
@@ -28,13 +28,19 @@ router
             newEventData.location = checkValidLocation(newEventData.location, 'Location');
             newEventData.location = xss(newEventData.location);
             newEventData.eventSize = checkValidEventSize(newEventData.eventSize, 'Event Size');
-            newEventData.eventOrganizer =  await checkValidEventOrganizer(newEventData.eventOrganizer);
+            newEventData.eventOrganizer =  checkString(newEventData.eventOrganizer);
             newEventData.tags = checkValidTags(newEventData.tags, 'tags');
             newEventData.description = checkString(newEventData.description, 'description');
             newEventData.description = xss(newEventData.description);
         }catch(e){
             return res.status(400).json({error: e});
         }  
+
+        try{
+            newEventData.eventOrganizer =  await checkValidUser(newEventData.eventOrganizer);
+        }catch(e){
+            return res.status(404).json({error: e})
+        }
 
         try{
             const{
@@ -106,7 +112,7 @@ router
                 updateData.location = xss(updateData.location);
             }
             if(updateData.eventSize) updateData.eventSize = checkValidEventSize(updateData.eventSize, 'Event Size');
-            if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidEventOrganizer(updateData.eventOrganizer);
+            if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidUser(updateData.eventOrganizer);
             if(updateData.tags) updateData.tags = checkValidTags(updateData.tags, 'tags');
             if(updateData.description){
                 updateData.description = checkString(updateData.description, 'description');
@@ -120,9 +126,74 @@ router
             const updatedEvent = await updateEvent(eventId, updateData);
             return res.json(updatedEvent);
         }catch(e){
-            return res.status(500).json({error: e});
+            return res.status(404).json({error: e});
         }
 
     })
+
+// When signing up a user pass in the users firebaseUid and the event organizers firebaseUid in the body
+router
+    .route('/:eventId/signUpUser')
+    .put(async (req, res) => {
+        let eventId = req.params.eventId;
+        let {userId, eventOrganizer} = req.body;
+
+        if(eventOrganizer === userId) return res.status(400).json({message: "The User created this event, they are automatically signed up."})
+
+        try{
+            eventId = checkID(eventId, 'event ID');
+            userId = checkString(userId, 'User ID');
+            eventOrganizer = checkString(eventOrganizer, 'Event Organizer ID');
+        }catch(e){
+            return res.status(400).json({error: e});
+        }
+        
+        try{
+            userId = await checkValidUser(userId);
+            eventOrganizer = await checkValidUser(eventOrganizer);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+
+        try{
+            const updatedUser = await signUpUser(eventId, userId, eventOrganizer);
+            return res.json(updatedUser);
+        }catch(e){
+            return res.status(e.status).json({error: e.message});
+        }
+    });
+
+// When unsigning up a user pass in the users firebaseUid and the event organizers firebaseUid in the body
+    router
+    .route('/:eventId/unsignUpUser')
+    .put(async (req, res) => {
+        let eventId = req.params.eventId;
+        let {userId, eventOrganizer} = req.body;
+
+        if(eventOrganizer === userId) return res.status(400).json({message: "The User created this event, they cannot unregister for this event."})
+
+
+        try{
+            eventId = checkID(eventId, 'event ID');
+            userId = checkString(userId, 'User ID');
+            eventOrganizer = checkString(eventOrganizer, 'Event Organizer ID');
+        }catch(e){
+            return res.status(400).json({error: e});
+        }
+
+        try{
+            userId = await checkValidUser(userId);
+            eventOrganizer = await checkValidUser(eventOrganizer);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+
+        try{
+            const updatedUser = await unsignUpUser(eventId, userId, eventOrganizer);
+            return res.json(updatedUser);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+    });
 
 export default router;

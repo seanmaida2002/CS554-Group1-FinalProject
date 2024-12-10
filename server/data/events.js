@@ -1,7 +1,8 @@
 import { events, users } from "../config/mongoCollections.js";
 import xss from "xss";
-import { checkString, checkID, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidEventOrganizer } from "../helpers.js";
+import { checkString, checkID, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser } from "../helpers.js";
 import { ObjectId } from "mongodb";
+import { status } from "init";
 
 export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description /*, image */) => {
     // Error Checking
@@ -11,7 +12,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     location = checkValidLocation(location, 'Location');
     location = xss(location);
     eventSize = checkValidEventSize(eventSize, 'Event Size');
-    eventOrganizer = await checkValidEventOrganizer(eventOrganizer);
+    eventOrganizer = await checkValidUser(eventOrganizer);
     tags = checkValidTags(tags, 'tags');
     description = checkString(description, 'description');
     description = xss(description);
@@ -25,7 +26,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
         eventOrganizer: eventOrganizer, 
         tags: tags,
         description: description, 
-        usersSignedUp: [],
+        usersSignedUp: [eventOrganizer],
         comments: []
     }
 
@@ -38,7 +39,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     const usersCollection = await users();
     await usersCollection.findOneAndUpdate(
         {firebaseUid: eventOrganizer}, 
-        {$push: {eventsMade: insertInfo.insertedId.toString()}}, 
+        {$push: {eventsMade: insertInfo.insertedId.toString(), eventsAttending: insertInfo.insertedId.toString()}}, 
         { returnDocument: "after" });
 
     return event;
@@ -106,7 +107,7 @@ export const updateEvent = async (eventId, updateData) => {
         updateData.location = xss(updateData.location);
     }
     if(updateData.eventSize) updateData.eventSize = checkValidEventSize(updateData.eventSize, 'Event Size');
-    if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidEventOrganizer(updateData.eventOrganizer);
+    if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidUser(updateData.eventOrganizer);
     if(updateData.tags) updateData.tags = checkValidTags(updateData.tags, 'tags');
     if(updateData.description){
         updateData.description = checkString(updateData.description, 'description');
@@ -122,4 +123,59 @@ export const updateEvent = async (eventId, updateData) => {
     if(!updatedEvent) throw 'Error: unable to update event with the given ID';
 
     return updatedEvent;
+};
+
+export const signUpUser = async (eventId, userId, eventOrganizer) => {
+    eventId = checkID(eventId, 'Event Id');
+    userId = await checkValidUser(userId);
+    eventOrganizer = await checkValidUser(eventOrganizer);
+
+    if(eventOrganizer === userId) throw {status: 400, message: "The User created this event, they are automatically signed up."};
+
+    const eventsCollection = await events();
+    const eventReturned = await eventsCollection.findOneAndUpdate(
+        {_id: ObjectId.createFromHexString(eventId)},
+        {$addToSet: {usersSignedUp: userId}}, 
+        {returnDocument: 'after'});
+
+        if(!eventReturned) throw {status: 404, message:'Error: unable to register user for event with the given event Id'};
+
+    const usersCollection = await users();
+    const userReturned = await usersCollection.findOneAndUpdate(
+        {firebaseUid: userId},
+        {$addToSet: {eventsAttending: eventId}},
+        {returnDocument: 'after'}
+    );
+
+    if(!userReturned) throw {status: 404, message:'Error: unable to register user for event with the given user Id'};
+
+    return userReturned;
+};
+
+export const unsignUpUser = async (eventId, userId, eventOrganizer) => {
+    eventId = checkID(eventId, 'Event Id');
+    userId = await checkValidUser(userId);
+    eventOrganizer = await checkValidUser(eventOrganizer);
+
+
+    if(eventOrganizer === userId) throw {status: 400, message: "The User created this event, they cannot unregister for this event."};
+
+    const eventsCollection = await events();
+    const eventReturned = await eventsCollection.findOneAndUpdate(
+        {_id: ObjectId.createFromHexString(eventId)},
+        {$pull: {usersSignedUp: userId}}, 
+        {returnDocument: 'after'});
+
+    if(!eventReturned) throw {status: 404, message:'Error: unable to unregister user for event with the given event Id'};
+    
+    const usersCollection = await users();
+    const userReturned = await usersCollection.findOneAndUpdate(
+        {firebaseUid: userId},
+        {$pull: {eventsAttending: eventId}},
+        {returnDocument: 'after'}
+    );
+
+    if(!userReturned) throw {status: 404, message:'Error: unable to unregister user for event with the given user Id'};
+
+    return userReturned;
 };

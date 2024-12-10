@@ -186,8 +186,7 @@ export function checkValidEventSize(eventSize, variableName){
 }
 
 
-export async function checkValidEventOrganizer(user){
-    user = checkString(user, 'user id')
+export async function checkValidUser(user){
     const userCollection = await users();
     const userFound = await userCollection.findOne({ firebaseUid: user });
 
