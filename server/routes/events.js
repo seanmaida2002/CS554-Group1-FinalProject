@@ -83,8 +83,11 @@ router
           }
     })
     // Route to delete an event by its Id
+    // In body put the user who is deleting the events, firebaseUid in the body as userId
     .delete(async (req, res) => {
         let id = req.params.eventId;
+        let userId = req.body.userId;
+        
         try{
             id = checkID(id, 'event ID')
         }catch(e){
@@ -92,16 +95,31 @@ router
         }   
 
         try{
-            const eventDeleted = await deleteEventById(id);
+            userId = await checkValidUser(userId);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+
+        try{
+            const eventDeleted = await deleteEventById(id, userId);
             return res.json(eventDeleted);
           }catch(e){
             return res.status(404).json({error: e});
           }
     })
     // Route to edit an event by its Id
+    // In body put the user who is editing the events, firebaseUid in the body as userId
     .patch(async (req, res) => {
+        let userId = req.body.userId;
+        delete req.body.userId;
         let updateData = req.body;
         let eventId = req.params.eventId;
+
+        try{
+            userId = await checkValidUser(userId);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
 
         try{
             eventId = checkID(eventId, 'event ID');
@@ -115,7 +133,6 @@ router
                 updateData.location = xss(updateData.location);
             }
             if(updateData.eventSize) updateData.eventSize = checkValidEventSize(updateData.eventSize, 'Event Size');
-            if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidUser(updateData.eventOrganizer);
             if(updateData.tags) updateData.tags = checkValidTags(updateData.tags, 'tags');
             if(updateData.description){
                 updateData.description = checkString(updateData.description, 'description');
@@ -128,7 +145,7 @@ router
         }
 
         try{
-            const updatedEvent = await updateEvent(eventId, updateData);
+            const updatedEvent = await updateEvent(eventId, updateData , userId);
             return res.json(updatedEvent);
         }catch(e){
             return res.status(404).json({error: e});
