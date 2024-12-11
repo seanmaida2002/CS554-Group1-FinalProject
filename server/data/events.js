@@ -11,7 +11,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     location = checkValidLocation(location, 'Location');
     location = xss(location);
     eventSize = checkValidEventSize(eventSize, 'Event Size');
-    eventOrganizer = await checkValidEventOrganizer(eventOrganizer);
+    // eventOrganizer = await checkValidEventOrganizer(eventOrganizer);
     tags = checkValidTags(tags, 'tags');
     description = checkString(description, 'description');
     description = xss(description);
@@ -37,7 +37,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     const event = await eventsCollection.findOne({ _id: insertInfo.insertedId });
     const usersCollection = await users();
     await usersCollection.findOneAndUpdate(
-        {firebaseUid: eventOrganizer}, 
+        {_id: eventOrganizer}, 
         {$push: {eventsMade: insertInfo.insertedId.toString()}}, 
         { returnDocument: "after" });
 
