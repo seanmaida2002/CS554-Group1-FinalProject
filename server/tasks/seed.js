@@ -20,7 +20,7 @@ const event1 = await events.createEvent(
     "basketBall", 
     "new Jersey", 
     45, 
-    "KK5mpdSkj2W93IJj8W2uRQy2uGR2", 
+    "6758c241dbe6502984cd0147", 
     ['Ball', 'Basket', "pickup"], 
     'This is a default description for the first event ever'
 )
