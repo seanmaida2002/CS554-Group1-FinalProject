@@ -170,9 +170,9 @@ export function checkValidSport(sport, variableName){
     if(typeof sport !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
     sport = sport.trim();
     if(sport.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
-
-    // Need a list of valid sports to validate the sport input    
-    // const sports = ['basketball', 'roller hockey', 'ice hockey', 'soccer', 'baseball', 'softball', 'pickle ball']
+    // List of valid sports
+    const validSports = ['soccer', 'basketball', 'hockey', 'tennis', 'baseball', 'volleyball', 'football', 'pickleball']
+    if(!validSports.includes(sport.toLowerCase()))  throw `Error: ${variableName || "provided variable"} is not a valid sport.`;
     return sport;
 }
 

@@ -1,8 +1,11 @@
 import { Router } from "express";
 import xss from "xss";
+import redis from 'redis';
 import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
 import { checkString, checkValidEventName, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
 const router = Router();
+const client = redis.createClient();
+await client.connect();
 
 router
     .route('/')
@@ -10,6 +13,7 @@ router
     .get(async (req, res) => {
         try{
             const allEvents = await getAllEvents();
+            await client.json.set('getAllEvents', '$', allEvents, {EX: 3600});
             return res.json(allEvents);
           }catch(e){
             return res.status(500).json({error: e});
@@ -57,6 +61,8 @@ router
             } = newEventData;
 
             const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);
+            await client.json.set(`event:{${eventReturned._id.toString()}}`, '$', eventReturned, {EX: 3600});
+            await client.del('getAllEvents');
             return res.status(200).json(eventReturned);
         }catch(e){
             return res.status(500).json({error: e});
@@ -77,6 +83,7 @@ router
 
         try{
             const event = await getEventById(id);
+            await client.json.set(`event:{${id}}`, '$', event, {EX: 3600});
             return res.json(event);
           }catch(e){
             return res.status(404).json({error: e});
@@ -102,6 +109,8 @@ router
 
         try{
             const eventDeleted = await deleteEventById(id, userId);
+            await client.del(`event:{${id}}`);
+            await client.del('getAllEvents');
             return res.json(eventDeleted);
           }catch(e){
             return res.status(404).json({error: e});
@@ -146,6 +155,8 @@ router
 
         try{
             const updatedEvent = await updateEvent(eventId, updateData , userId);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
             return res.json(updatedEvent);
         }catch(e){
             return res.status(404).json({error: e});
@@ -179,6 +190,8 @@ router
 
         try{
             const updatedUser = await signUpUser(eventId, userId, eventOrganizer);
+            await client.del(`event:{${eventId}}`);
+            await client.del('getAllEvents');
             return res.json(updatedUser);
         }catch(e){
             return res.status(e.status).json({error: e.message});
@@ -212,6 +225,8 @@ router
 
         try{
             const updatedUser = await unsignUpUser(eventId, userId, eventOrganizer);
+            await client.del(`event:{${eventId}}`);
+            await client.del('getAllEvents');
             return res.json(updatedUser);
         }catch(e){
             return res.status(404).json({error: e});
