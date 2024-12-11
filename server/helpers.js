@@ -216,3 +216,26 @@ export function checkValidLocation(location, variableName){
     // How else are we validating location, is it the name of the venue or the address?
     return location;
 }
+
+export function checkValidEventDate(date, variableName) {
+    date = checkString(date, variableName);
+    // Check date released to be a valid date in format must be in MM/DD/YYYY
+    if(!/^[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9][0-9][0-9]$/.test(date)) throw `Error: ${variableName || "provided variable"} is not in mm/dd/yyyy format.`;
+    date = date.split('/');
+    const givenDate = new Date(`${date[2]}-${date[0]}-${date[1]}`);
+    if("Invalid Date" === givenDate.toString()) throw `Error: ${variableName || "provided variable"} is not a valid date.`;
+    // Below checks to see whether or not the date given takes place after todays date
+    let currentDate = new Date();
+    if(currentDate.getFullYear() > Number(date[2]) || 
+        ((currentDate.getMonth()+1) > Number(date[0]) && currentDate.getFullYear() === Number(date[2])) ||
+        (currentDate.getDate() > Number(date[1]) && currentDate.getFullYear() === Number(date[2]) && (currentDate.getMonth()+1) === Number(date[0]))
+     ) throw `Error: ${variableName || "provided variable"} is a date that has already happened.`;
+
+     return `${date[0]}/${date[1]}/${date[2]}`;
+};
+
+export function checkValidEventTime(time, variableName){
+    time = checkString(time, variableName);
+    if(!/(^(0?[1-9]|1[0-2]):([0-5][0-9]) ?([AaPp][Mm]))/.test(time))  throw `Error: ${variableName || "provided variable"} is not in HH:MM AM/PM format.`;
+    return time;
+}

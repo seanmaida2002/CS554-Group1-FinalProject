@@ -1,7 +1,7 @@
 import { Router } from "express";
 import xss from "xss";
-import { getAllEvents, createEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
-import { checkString, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
+import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
+import { checkString, checkValidEventName, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
 const router = Router();
 
 router
@@ -28,10 +28,12 @@ router
             newEventData.location = checkValidLocation(newEventData.location, 'Location');
             newEventData.location = xss(newEventData.location);
             newEventData.eventSize = checkValidEventSize(newEventData.eventSize, 'Event Size');
+            newEventData.date = checkValidEventDate(newEventData.date, 'Event Date');
             newEventData.eventOrganizer =  checkString(newEventData.eventOrganizer);
             newEventData.tags = checkValidTags(newEventData.tags, 'tags');
             newEventData.description = checkString(newEventData.description, 'description');
             newEventData.description = xss(newEventData.description);
+            newEventData.time = checkValidEventTime(newEventData.time, 'Event Time');
         }catch(e){
             return res.status(400).json({error: e});
         }  
@@ -50,10 +52,11 @@ router
                 eventSize, 
                 tags,
                 eventOrganizer, 
-                description
+                description, 
+                date, time
             } = newEventData;
 
-            const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description);
+            const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);
             return res.status(200).json(eventReturned);
         }catch(e){
             return res.status(500).json({error: e});
@@ -118,6 +121,8 @@ router
                 updateData.description = checkString(updateData.description, 'description');
                 updateData.description = xss(updateData.description);
             }
+            if(updateData.date) updateData.date = checkValidEventDate(updateData.date, 'Event Date');
+            if(updateData.time) updateData.time = checkValidEventTime(updateData.time, 'Event Time');
         }catch(e){
             return res.status(400).json({error: e});
         }
