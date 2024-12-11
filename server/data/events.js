@@ -68,13 +68,17 @@ export const getEventById = async (id) => {
     return eventReturned;
 };
 
-export const deleteEventById = async (id) => {
+export const deleteEventById = async (id, userId) => {
     id = checkID(id, 'eventID');
+    userId = await checkValidUser(userId);
 
     const eventsCollection = await events();
-    const eventDeleted = await eventsCollection.findOneAndDelete({_id: ObjectId.createFromHexString(id)});
+    const eventDeleted = await eventsCollection.findOneAndDelete(
+        {_id: ObjectId.createFromHexString(id),
+         eventOrganizer: userId}
+        );
 
-    if(!eventDeleted) throw "Error: event with the given id does not exist."
+    if(!eventDeleted) throw "Error: event with the given id does not exist or the user doing this is not the event organizer."
 
     const usersCollection = await users();
     await usersCollection.findOneAndUpdate(
@@ -90,8 +94,9 @@ export const deleteEventById = async (id) => {
     return eventDeleted;
 };
 
-export const updateEvent = async (eventId, updateData) => {
+export const updateEvent = async (eventId, updateData, userId) => {
     eventId = checkID(eventId, 'Event ID');
+    userId = await checkValidUser(userId);
 
     if(updateData === undefined) throw `Error: updateObject is undefined.`;
     if(typeof updateData !== "object" || updateData === null || Array.isArray(updateData)) throw`Error: updateObject is not an object.`;
@@ -107,7 +112,6 @@ export const updateEvent = async (eventId, updateData) => {
         updateData.location = xss(updateData.location);
     }
     if(updateData.eventSize) updateData.eventSize = checkValidEventSize(updateData.eventSize, 'Event Size');
-    if(updateData.eventOrganizer) updateData.eventOrganizer =  await checkValidUser(updateData.eventOrganizer);
     if(updateData.tags) updateData.tags = checkValidTags(updateData.tags, 'tags');
     if(updateData.description){
         updateData.description = checkString(updateData.description, 'description');
@@ -118,7 +122,7 @@ export const updateEvent = async (eventId, updateData) => {
 
     const eventsCollection = await events();
     const updatedEvent = await eventsCollection.findOneAndUpdate(
-        {_id: ObjectId.createFromHexString(eventId)},
+        {_id: ObjectId.createFromHexString(eventId), eventOrganizer: userId},
         {$set: updateData},
         {returnDocument: 'after'});
 
