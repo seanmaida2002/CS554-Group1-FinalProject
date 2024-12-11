@@ -165,6 +165,7 @@ export const updateUser = async (firebaseUid, obj) => {
         checkValidUsername(obj.username.trim());
         user.username = obj.username.trim();
     }
+    
     if (obj.dateOfBirth) {
         checkDateOfBirth(obj.dateOfBirth, 'dateOfBirth');
         user.dateOfBirth = obj.dateOfBirth.trim();
@@ -183,9 +184,11 @@ export const updateUser = async (firebaseUid, obj) => {
         { $set: user },
         { returnDocument: "after" }
     );
+   
     if (user === null) {
         throw `Error: no user found with that id`;
     }
+    console.log(user);
     user._id = user._id.toString();
     return user;
 }

@@ -1,0 +1,59 @@
+body{
+    background-color: #e9eef6;
+}
+.events{
+    padding: 20px;
+}
+.event-card {
+    padding: 16px; 
+    margin: 16px 0; 
+    border-radius: 20px;
+    background-color: #ffffff; 
+}
+
+
+.event-card h2 {
+    font-size: 1.5rem; 
+    color: #333; 
+    margin-bottom: 8px; 
+}
+
+
+.event-card p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 1rem; 
+}
+
+
+.tags, .comments {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 8px; 
+    margin-top: 12px; 
+}
+
+
+.tag {
+    background-color: #c2e7ff; 
+    color: #fff; 
+    padding: 7px 12px; 
+    border-radius: 16px; 
+    font-size: 0.9rem; 
+    white-space: nowrap; 
+}
+
+
+.comments {
+    margin-top: 16px;
+}
+
+.comments .tag {
+    background-color: #28a745; 
+}
+
+
+.tag:hover {
+    background-color: #0056b3; 
+    cursor: pointer; 
+}

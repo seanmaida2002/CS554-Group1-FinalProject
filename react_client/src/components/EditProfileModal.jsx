@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../App.css';
 import ReactModal from 'react-modal';
 import axios from 'axios';
-import { getAuth } from 'firebase/auth';
+import { getAuth, updateEmail } from 'firebase/auth';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
 ReactModal.setAppElement('#root');
@@ -103,10 +103,10 @@ function EditProfileModal(props) {
             if (e.response && e.response.data) {
                 setError(e.response.data.error);
             }
-            alert(e);
         }
     };
 
+    const auth = getAuth();
     return (
         <div>
             <ReactModal
@@ -135,7 +135,7 @@ function EditProfileModal(props) {
                     }}
                 >
                     <div className='editProfile-form'>
-                    {error && <h4 className='error'>{error}</h4>}
+                        {error && <h4 className='error'>{error}</h4>}
                         <label>
                             First Name:
                             <br />
@@ -189,18 +189,28 @@ function EditProfileModal(props) {
                     </div>
                     <br />
                     <div className='editProfile-form'>
-                        <label>
-                            Email: {profile.email}
-                            <br />
-                            <input
-                                ref={(node) => {
-                                    email = node;
-                                }}
-                                style={{ visibility: 'hidden' }}
-                                defaultValue={profile.email}
-                            />
-                        </label>
+                        {auth.currentUser.providerData[0].providerId === 'password' ?
+                            (
+                                <label>
+                                    Email:
+                                    <br />
+                                    <input
+                                        ref={(node) => {
+                                            email = node;
+                                        }}
+                                        defaultValue={profile.email}
+                                    />
+                                </label>
+                            ) :
+                            (
+                                <label>
+                                    Email: {profile.email}
+                                    <p style={{ fontSize: 'x-small' }}>You are signed in with Google. You can't change your email</p>
+                                </label>
+                            )
+                        }
                     </div>
+                    <br />
                     <div className='editProfile-form'>
                         <label>
                             Username:
@@ -221,6 +231,7 @@ function EditProfileModal(props) {
             </ReactModal>
         </div>
     );
+
 
 }
 

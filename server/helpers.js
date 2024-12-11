@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { users } from "./config/mongoCollections.js";
 
 export function checkString(param, name) {
     if (param === undefined || typeof param !== "string") {
@@ -9,7 +10,7 @@ export function checkString(param, name) {
         throw `${name} cannot be an empty string`;
     }
 
-    return param;
+    return param.trim();
 }
 
 export function checkValidEmail(email, name) {
@@ -33,16 +34,15 @@ export function checkValidName(param, name) {
 }
 
 export function checkValidUsername(param) {
-    const usernameRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-
-    if (param.length < 3 || param.length > 12) {
-        throw 'username has to at least 2 characters but less than 12 characters';
+    const usernameRegex = /[!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]/;
+    if (param.length < 3 || param.length > 50) {
+        throw 'username has to at least 2 characters but less than 50 characters';
     }
 
     if (usernameRegex.test(param)) {
         throw 'username cannot any contain special characters'
     }
-
+    
     return param;
 }
 
@@ -153,4 +153,88 @@ export function checkDateOfBirth(dob, varName){
     }
     checkDate(dob, varName);
     checkValidAge(dob, varName);
+}
+
+export function checkValidEventName(eventName, variableName){
+    if(eventName === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof eventName !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    eventName = eventName.trim();
+    if(eventName.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+    // Anymore restrictions on event names?
+    return eventName
+}
+
+export function checkValidSport(sport, variableName){
+    if(sport === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof sport !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    sport = sport.trim();
+    if(sport.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+
+    // Need a list of valid sports to validate the sport input    
+    // const sports = ['basketball', 'roller hockey', 'ice hockey', 'soccer', 'baseball', 'softball', 'pickle ball']
+    return sport;
+}
+
+export function checkValidEventSize(eventSize, variableName){
+    if(eventSize === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof eventSize !== 'number') throw `Error: ${variableName || "provided variable"} is not a number.`;
+    if(!Number.isInteger(eventSize)) throw `Error: ${variableName || "provided variable"} must be an integer.`;
+    if(eventSize <= 0) throw `Error: ${variableName || "provided variable"} must be greater than 0.`;
+
+    return eventSize;
+}
+
+
+export async function checkValidUser(user){
+    const userCollection = await users();
+    const userFound = await userCollection.findOne({ firebaseUid: user });
+
+    if (!userFound) throw `No user with that id`;
+
+    return user;
+}
+
+export function checkValidTags(tags, variableName){
+    if(tags === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(!Array.isArray(tags)) throw `Error: ${variableName || "provided variable"} is not an array.`;
+
+    tags = tags.map((x) => {
+        x = checkString(x, `Error: an item of ${variableName || "provided variable"}`);
+        return x;
+    });
+
+    return tags;
+}
+
+export function checkValidLocation(location, variableName){
+    if(location === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
+    if(typeof location !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
+    location = location.trim();
+    if(location.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
+
+    // How else are we validating location, is it the name of the venue or the address?
+    return location;
+}
+
+export function checkValidEventDate(date, variableName) {
+    date = checkString(date, variableName);
+    // Check date released to be a valid date in format must be in MM/DD/YYYY
+    if(!/^[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9][0-9][0-9]$/.test(date)) throw `Error: ${variableName || "provided variable"} is not in mm/dd/yyyy format.`;
+    date = date.split('/');
+    const givenDate = new Date(`${date[2]}-${date[0]}-${date[1]}`);
+    if("Invalid Date" === givenDate.toString()) throw `Error: ${variableName || "provided variable"} is not a valid date.`;
+    // Below checks to see whether or not the date given takes place after todays date
+    let currentDate = new Date();
+    if(currentDate.getFullYear() > Number(date[2]) || 
+        ((currentDate.getMonth()+1) > Number(date[0]) && currentDate.getFullYear() === Number(date[2])) ||
+        (currentDate.getDate() > Number(date[1]) && currentDate.getFullYear() === Number(date[2]) && (currentDate.getMonth()+1) === Number(date[0]))
+     ) throw `Error: ${variableName || "provided variable"} is a date that has already happened.`;
+
+     return `${date[0]}/${date[1]}/${date[2]}`;
+};
+
+export function checkValidEventTime(time, variableName){
+    time = checkString(time, variableName);
+    if(!/(^(0?[1-9]|1[0-2]):([0-5][0-9]) ?([AaPp][Mm]))/.test(time))  throw `Error: ${variableName || "provided variable"} is not in HH:MM AM/PM format.`;
+    return time;
 }
