@@ -12,7 +12,7 @@ function Home() {
   const [attendingEvents, setAttendingEvents] = useState([]);
   const [filteredSport, setFilteredSport] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const [view, setView] = useState("otherEvents"); // State to toggle between views
+  const [view, setView] = useState("otherEvents");
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -56,7 +56,7 @@ function Home() {
       for (const event of events) {
         if (event.eventOrganizer === user.uid) {
           myEventsTemp.push(event);
-        } else if (userInfo?.eventsAttending?.includes(event.id)) {
+        } else if (userInfo?.eventsAttending?.includes(event._id)) {
           attendingEventsTemp.push(event);
         } else {
           otherEventsTemp.push(event);
@@ -92,7 +92,43 @@ function Home() {
     if (view === "attendingEvents") {
       return filteredAttendingEvents;
     }
-    return filteredOtherEvents; 
+    return filteredOtherEvents;
+  };
+
+  const handleSignUp = async (eventId, eventOrganizer) => {
+    if (!user || !userInfo) return;
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/events/${eventId}/signUpUser`,
+        {
+          userId: user.uid,
+          eventOrganizer: eventOrganizer, 
+        }
+      );
+
+      setOtherEvents((prev) => prev.filter((event) => event._id !== eventId));
+    } catch (error) {
+      console.error(`Error signing up for event: ${error.message}`);
+    }
+  };
+
+  const handleUnsignUp = async (eventId, eventOrganizer) => {
+    if (!user || !userInfo) return;
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/events/${eventId}/unsignUpUser`,
+        {
+          userId: user.uid,
+          eventOrganizer: eventOrganizer, 
+        }
+      );
+
+      setAttendingEvents((prev) => prev.filter((event) => event._id !== eventId));
+    } catch (error) {
+      console.error(`Error signing up for event: ${error.message}`);
+    }
   };
 
   if (!user) {
@@ -162,9 +198,25 @@ function Home() {
                   <h2>
                     {event.eventName}: {event.sport}
                   </h2>
-                  <h2 className="signed">
+                  <div
+                    className="signed"
+                    onClick={() => {
+                      const isSignedUp = attendingEvents.some(
+                        (e) => e._id === event._id
+                      );
+                      if (isSignedUp) {
+                        handleUnsignUp(event._id, event.eventOrganizer);
+                        event.usersSignedUp = event.usersSignedUp.filter((id) => id != user.uid);
+                        otherEvents.push(event);
+                      } else {
+                        handleSignUp(event._id, event.eventOrganizer);
+                        event.usersSignedUp.push(user.uid);
+                        attendingEvents.push(event);
+                      }
+                    }}
+                  >
                     {event.usersSignedUp.length}/{event.eventSize}
-                  </h2>
+                  </div>
                 </div>
                 <h4>
                   {event.time} on {event.date}
