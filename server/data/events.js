@@ -37,7 +37,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     const event = await eventsCollection.findOne({ _id: insertInfo.insertedId });
     const usersCollection = await users();
     await usersCollection.findOneAndUpdate(
-        {_id: eventOrganizer}, 
+        {firebaseUid: eventOrganizer}, 
         {$push: {eventsMade: insertInfo.insertedId.toString()}}, 
         { returnDocument: "after" });
 
