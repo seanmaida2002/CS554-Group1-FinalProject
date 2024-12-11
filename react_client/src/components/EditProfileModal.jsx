@@ -103,7 +103,6 @@ function EditProfileModal(props) {
             if (e.response && e.response.data) {
                 setError(e.response.data.error);
             }
-            alert(e);
         }
     };
 

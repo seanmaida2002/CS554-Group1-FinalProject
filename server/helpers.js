@@ -34,16 +34,15 @@ export function checkValidName(param, name) {
 }
 
 export function checkValidUsername(param) {
-    const usernameRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-
-    if (param.length < 3 || param.length > 12) {
-        throw 'username has to at least 2 characters but less than 12 characters';
+    const usernameRegex = /[!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]/;
+    if (param.length < 3 || param.length > 50) {
+        throw 'username has to at least 2 characters but less than 50 characters';
     }
 
     if (usernameRegex.test(param)) {
         throw 'username cannot any contain special characters'
     }
-
+    
     return param;
 }
 
