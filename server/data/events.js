@@ -1,9 +1,9 @@
 import { events, users } from "../config/mongoCollections.js";
 import xss from "xss";
-import { checkString, checkID, checkValidEventName, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser } from "../helpers.js";
+import { checkString, checkID, checkValidEventName, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkValidEventTime } from "../helpers.js";
 import { ObjectId } from "mongodb";
 
-export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description /*, image */) => {
+export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time /*, image */) => {
     // Error Checking
     eventName = checkValidEventName(eventName, 'Event Name');
     eventName = xss(eventName);
@@ -15,6 +15,8 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
     tags = checkValidTags(tags, 'tags');
     description = checkString(description, 'description');
     description = xss(description);
+    date = checkValidEventDate(date, 'Event Date')
+    time = checkValidEventTime(time, 'Event Time');
 
     let newEvent = {
         eventName: eventName,
@@ -23,6 +25,8 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
         eventSize: eventSize,
         // image: image, 
         eventOrganizer: eventOrganizer, 
+        date: date,
+        time: time,
         tags: tags,
         description: description, 
         usersSignedUp: [eventOrganizer],
@@ -109,6 +113,8 @@ export const updateEvent = async (eventId, updateData) => {
         updateData.description = checkString(updateData.description, 'description');
         updateData.description = xss(updateData.description);
     }
+    if(updateData.date) updateData.date = checkValidEventDate(updateData.date, 'Event Date');
+    if(updateData.time) updateData.time = checkValidEventTime(updateData.time, 'Event Time');
 
     const eventsCollection = await events();
     const updatedEvent = await eventsCollection.findOneAndUpdate(
