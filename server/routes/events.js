@@ -93,7 +93,7 @@ router
     // In body put the user who is deleting the events, firebaseUid in the body as userId
     .delete(async (req, res) => {
         let id = req.params.eventId;
-        let userId = req.body.userId;
+        let userId = req.query.userId;
         
         try{
             id = checkID(id, 'event ID')

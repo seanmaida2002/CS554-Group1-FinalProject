@@ -22,7 +22,7 @@ body {
   text-align: center;
 }
 .event-card img {
-  width: 40%;
+  width: 20%;
   height: auto;
   margin: 0 auto;
   border-radius: 20px;
@@ -47,7 +47,11 @@ body {
   color: #555;
   font-size: 1rem;
 }
-
+.middle{
+  justify-content: left;
+  display: flex;
+  align-items: left;
+}
 .tags,
 .comments {
   display: flex;
@@ -80,15 +84,25 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background-color: #c2e7ff;
   color: black;
   font-size: 1rem;
   text-align: center;
+  font-size: x-large;
 }
-
+.info button{
+  padding: 20px 40px; 
+    font-size: 20px;
+    border: none;
+    background-color: #c2e7ff;
+    color: black;
+    cursor: pointer;
+    border-radius: 30px; 
+    transition: background-color 0.3s ease;
+}
 .comments {
   margin-top: 16px;
 }
