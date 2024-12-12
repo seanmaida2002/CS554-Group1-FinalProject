@@ -194,6 +194,22 @@ export async function checkValidUser(user){
     return user;
 }
 
+export async function checkValidUserAndGetUsername(user){
+    const userCollection = await users();
+    const userFound = await userCollection.findOne({ firebaseUid: user });
+
+    if (!userFound) throw `No user with that id`;
+
+    return userFound.username;
+}
+
+export function checkValidComment(comment){
+    comment = checkString(comment, 'comment');
+
+    // Any other validations
+    return comment;
+}
+
 export function checkValidTags(tags, variableName){
     if(tags === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
     if(!Array.isArray(tags)) throw `Error: ${variableName || "provided variable"} is not an array.`;

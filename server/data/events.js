@@ -1,6 +1,6 @@
 import { events, users } from "../config/mongoCollections.js";
 import xss from "xss";
-import { checkString, checkID, checkValidEventName, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkValidEventTime } from "../helpers.js";
+import { checkString, checkID, checkValidEventName, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkValidEventTime, checkValidUsername, checkValidComment } from "../helpers.js";
 import { ObjectId } from "mongodb";
 
 export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time /*, image */) => {
@@ -184,4 +184,49 @@ export const unsignUpUser = async (eventId, userId, eventOrganizer) => {
     if(!userReturned) throw {status: 404, message:'Error: unable to unregister user for event with the given user Id'};
 
     return userReturned;
+};
+
+export const addComment = async (eventId, userId, username, comment) => {
+    userId = await checkValidUser(userId);
+    username = checkValidUsername(username);
+    comment =  checkValidComment(comment);
+    eventId = checkID(eventId);
+
+    let newComment = {
+        _id: new ObjectId(),
+        userId: userId,
+        username: username, 
+        comment: comment
+    }
+    const eventsCollection = await events();
+    const updatedEvent = await eventsCollection.findOneAndUpdate(
+        {_id: ObjectId.createFromHexString(eventId)},
+        {$push: {comments: newComment}},
+        {returnDocument: 'after'}
+    )
+
+    if(!updatedEvent) throw 'Error: unable to update event with the given ID';
+
+    return updatedEvent;
+};
+
+export const deleteComment = async (eventId, commentId, userId) => {
+    userId = await checkValidUser(userId);
+    eventId = checkID(eventId, 'Event ID');
+    commentId = checkID(commentId, 'Comment ID');
+
+    const eventsCollection = await events();
+    const updatedEvent = await eventsCollection.findOneAndUpdate(
+        {_id: ObjectId.createFromHexString(eventId),
+         'comments._id': ObjectId.createFromHexString(commentId),
+         'comments.userId': userId   
+        },
+        {$pull: {comments: {_id: ObjectId.createFromHexString(commentId), userId: userId}}},
+        {returnDocument: 'after'}
+    );
+
+    if(!updatedEvent) throw 'Error: unable to update event with the given ID';
+
+    return updatedEvent;
+    
 };
