@@ -1,8 +1,8 @@
 import { Router } from "express";
 import xss from "xss";
 import redis from 'redis';
-import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
-import { checkString, checkValidEventName, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
+import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser, addComment, deleteComment } from "../data/events.js";
+import { checkString, checkValidEventName, checkValidComment, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID, checkValidUserAndGetUsername } from "../helpers.js";
 const router = Router();
 const client = redis.createClient();
 await client.connect();
@@ -231,6 +231,69 @@ router
         }catch(e){
             return res.status(404).json({error: e});
         }
+    });
+
+    // To post a comment you only need the UserId and the comment in the request body
+    router
+    .route('/:eventId/comments')
+    .post(async (req, res) => {
+        let newCommentData = req.body;
+        let eventId = req.params.eventId;
+
+        if(!newCommentData || Object.keys(newCommentData).length === 0) return res.status(400).json({error: "The request body is empty."});
+
+        try{
+            newCommentData.username = await checkValidUserAndGetUsername(newCommentData.userId)
+        }catch(e){
+            return res.status(404).json({error: 'No user with that User Id.'})
+        }
+
+        try{
+            eventId = checkID(eventId, 'Event ID')
+            newCommentData.comment = checkValidComment(newCommentData.comment);
+        }catch(e){
+            return res.status(400).json({error: e})
+        }
+
+        try{
+            let updatedEvent = await addComment(eventId, newCommentData.userId, newCommentData.username, newCommentData.comment);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
+            return res.json(updatedEvent);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+    });
+
+    router
+    .route('/:eventId/comments/:commentId')
+    .delete(async (req, res) => {
+        let eventId = req.params.eventId;
+        let commentId = req.params.commentId;
+        let userId = req.query.userId;
+
+        try{
+            eventId = checkID(eventId, 'event ID')
+            commentId = checkID(commentId, 'Comment ID');
+        }catch(e){
+            return res.status(400).json({error: e})
+        }   
+
+        try{
+            userId = await checkValidUser(userId);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+
+        try{
+            let updatedEvent = await deleteComment(eventId, commentId, userId);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
+            return res.json(updatedEvent);
+        }catch(e){  
+            return res.status(404).json({error: e});
+        }
+        
     });
 
 export default router;
