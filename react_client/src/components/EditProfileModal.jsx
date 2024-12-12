@@ -78,6 +78,14 @@ function EditProfileModal(props) {
                 setError(usernameError);
                 return;
             }
+
+            const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            
             let validAge = checkValidAge(dateOfBirth.value.trim(), "Date of Birth");
             if (validAge !== true) {
                 setError(validAge);
