@@ -190,6 +190,7 @@ export const addComment = async (eventId, userId, username, comment) => {
     userId = await checkValidUser(userId);
     username = checkValidUsername(username);
     comment =  checkValidComment(comment);
+    comment = xss(comment);
     eventId = checkID(eventId);
 
     let newComment = {
