@@ -1,8 +1,11 @@
 import { Router } from "express";
 import xss from "xss";
-import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser } from "../data/events.js";
-import { checkString, checkValidEventName, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID } from "../helpers.js";
+import redis from 'redis';
+import { getAllEvents, createEvent, updateEvent, getEventById, deleteEventById, signUpUser, unsignUpUser, addComment, deleteComment } from "../data/events.js";
+import { checkString, checkValidEventName, checkValidComment, checkValidEventTime, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkID, checkValidUserAndGetUsername } from "../helpers.js";
 const router = Router();
+const client = redis.createClient();
+await client.connect();
 
 router
     .route('/')
@@ -10,6 +13,7 @@ router
     .get(async (req, res) => {
         try{
             const allEvents = await getAllEvents();
+            await client.json.set('getAllEvents', '$', allEvents, {EX: 3600});
             return res.json(allEvents);
           }catch(e){
             return res.status(500).json({error: e});
@@ -57,6 +61,8 @@ router
             } = newEventData;
 
             const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);
+            await client.json.set(`event:{${eventReturned._id.toString()}}`, '$', eventReturned, {EX: 3600});
+            await client.del('getAllEvents');
             return res.status(200).json(eventReturned);
         }catch(e){
             return res.status(500).json({error: e});
@@ -77,6 +83,7 @@ router
 
         try{
             const event = await getEventById(id);
+            await client.json.set(`event:{${id}}`, '$', event, {EX: 3600});
             return res.json(event);
           }catch(e){
             return res.status(404).json({error: e});
@@ -86,7 +93,7 @@ router
     // In body put the user who is deleting the events, firebaseUid in the body as userId
     .delete(async (req, res) => {
         let id = req.params.eventId;
-        let userId = req.body.userId;
+        let userId = req.query.userId;
         
         try{
             id = checkID(id, 'event ID')
@@ -102,6 +109,8 @@ router
 
         try{
             const eventDeleted = await deleteEventById(id, userId);
+            await client.del(`event:{${id}}`);
+            await client.del('getAllEvents');
             return res.json(eventDeleted);
           }catch(e){
             return res.status(404).json({error: e});
@@ -146,6 +155,8 @@ router
 
         try{
             const updatedEvent = await updateEvent(eventId, updateData , userId);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
             return res.json(updatedEvent);
         }catch(e){
             return res.status(404).json({error: e});
@@ -179,6 +190,8 @@ router
 
         try{
             const updatedUser = await signUpUser(eventId, userId, eventOrganizer);
+            await client.del(`event:{${eventId}}`);
+            await client.del('getAllEvents');
             return res.json(updatedUser);
         }catch(e){
             return res.status(e.status).json({error: e.message});
@@ -212,10 +225,76 @@ router
 
         try{
             const updatedUser = await unsignUpUser(eventId, userId, eventOrganizer);
+            await client.del(`event:{${eventId}}`);
+            await client.del('getAllEvents');
             return res.json(updatedUser);
         }catch(e){
             return res.status(404).json({error: e});
         }
+    });
+
+    // To post a comment you only need the UserId and the comment in the request body
+    router
+    .route('/:eventId/comments')
+    .post(async (req, res) => {
+        let newCommentData = req.body;
+        let eventId = req.params.eventId;
+
+        if(!newCommentData || Object.keys(newCommentData).length === 0) return res.status(400).json({error: "The request body is empty."});
+
+        try{
+            newCommentData.username = await checkValidUserAndGetUsername(newCommentData.userId)
+        }catch(e){
+            return res.status(404).json({error: 'No user with that User Id.'})
+        }
+
+        try{
+            eventId = checkID(eventId, 'Event ID')
+            newCommentData.comment = checkValidComment(newCommentData.comment);
+            newCommentData.comment = xss(newCommentData.comment);
+        }catch(e){
+            return res.status(400).json({error: e})
+        }
+
+        try{
+            let updatedEvent = await addComment(eventId, newCommentData.userId, newCommentData.username, newCommentData.comment);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
+            return res.json(updatedEvent);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+    });
+
+    router
+    .route('/:eventId/comments/:commentId')
+    .delete(async (req, res) => {
+        let eventId = req.params.eventId;
+        let commentId = req.params.commentId;
+        let userId = req.query.userId;
+
+        try{
+            eventId = checkID(eventId, 'event ID')
+            commentId = checkID(commentId, 'Comment ID');
+        }catch(e){
+            return res.status(400).json({error: e})
+        }   
+
+        try{
+            userId = await checkValidUser(userId);
+        }catch(e){
+            return res.status(404).json({error: e});
+        }
+
+        try{
+            let updatedEvent = await deleteComment(eventId, commentId, userId);
+            await client.json.set(`event:{${eventId}}`, '$', updatedEvent, {EX: 3600});
+            await client.del('getAllEvents');
+            return res.json(updatedEvent);
+        }catch(e){  
+            return res.status(404).json({error: e});
+        }
+        
     });
 
 export default router;

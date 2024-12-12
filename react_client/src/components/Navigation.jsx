@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import SignOutButton from './SignOut';
 import "../App.css";
+import CreateEventModal from './CreateEvent';
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
@@ -10,6 +11,13 @@ const Navigation = () => {
 };
 
 const NavigationAuth = () => { //only display these links in the navigation bar when user is signed-in
+    const [showAddForm, setShowAddForm] = useState(false);
+
+    const closeAddFormState = () => {
+        setShowAddForm(false);
+      };
+    
+    
     return (
         <nav className='navigation'>
             <ul className='navbar-links-container'>
@@ -20,6 +28,14 @@ const NavigationAuth = () => { //only display these links in the navigation bar 
                     
                     <NavLink to='/profile'><img className='navigation-profile' alt='profile image' src='./imgs/profile-icon-white.png'/> </NavLink>
                 </li>
+                <button className='button' onClick={() => setShowAddForm(!showAddForm)}>
+          Create Event
+        </button>
+        {showAddForm && (
+          <CreateEventModal 
+          isOpen={showAddForm}
+          handleClose={closeAddFormState} />
+        )}
             </ul>
         </nav>
     );

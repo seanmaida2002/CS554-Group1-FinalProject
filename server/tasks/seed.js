@@ -16,13 +16,15 @@ const db = await dbConnection();
 // );
 // console.log(user1);
 const event1 = await events.createEvent(
-    "Event One", 
-    "basketBall", 
-    "new Jersey", 
-    45, 
-    "6758c241dbe6502984cd0147", 
-    ['Ball', 'Basket', "pickup"], 
-    'This is a default description for the first event ever'
+    "Event Four", 
+    "Soccer", 
+    "new york", 
+    20, 
+    "ytIlyWlQUtSPbjrp9sEbON6DT5K2", 
+    ['5ASide', 'Football', "Soccer"], 
+    'This is a default description for the first event ever',
+    '12/20/2024',
+    '12:00PM'
 )
 
 console.log("Done seeding database");
