@@ -107,21 +107,13 @@ export const createUserSocial = async (
 }
 
 export const getUser = async (firebaseUid) => {
-    // checkString(id, "id");
-    // id = id.trim();
-
-    // if(!ObjectId.isValid(id)){
-    //     throw `Invalid Object ID.`;
-    // }
-
     const userCollection = await users();
     const user = await userCollection.findOne({ firebaseUid: firebaseUid });
 
     if (user === null) {
         throw `No user with that id`;
     }
-
-    // user._id = user._id.toString();
+    user._id = user._id.toString();
     return user;
 };
 
@@ -188,7 +180,6 @@ export const updateUser = async (firebaseUid, obj) => {
     if (user === null) {
         throw `Error: no user found with that id`;
     }
-    console.log(user);
     user._id = user._id.toString();
     return user;
 }

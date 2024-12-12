@@ -24,6 +24,8 @@ function EditProfileModal(props) {
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [profile, setProfile] = useState(props.profile);
     const [error, setError] = useState('');
+    const auth = getAuth();
+    const firebaseUid = auth.currentUser.uid;
     //get profile information from server
     //edit profile from data functions
 
@@ -91,8 +93,7 @@ function EditProfileModal(props) {
                 dateOfBirth: dateOfBirth.value
             };
 
-            const auth = getAuth();
-            const firebaseUid = auth.currentUser.uid;
+            auth.currentUser.displayName = firstName.value + " " + lastName.value;
             const update = await axios.patch(`http://localhost:3000/user/${firebaseUid}`, updateProfile);
 
             alert("Profile Updated Successfully");
@@ -106,7 +107,7 @@ function EditProfileModal(props) {
         }
     };
 
-    const auth = getAuth();
+    
     return (
         <div>
             <ReactModal
@@ -205,6 +206,12 @@ function EditProfileModal(props) {
                             (
                                 <label>
                                     Email: {profile.email}
+                                    <input style={{display:"none"}}
+                                        ref={(node) => {
+                                            email = node;
+                                        }}
+                                        defaultValue={profile.email}
+                                    />
                                     <p style={{ fontSize: 'x-small' }}>You are signed in with Google. You can't change your email</p>
                                 </label>
                             )
