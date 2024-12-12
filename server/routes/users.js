@@ -15,6 +15,7 @@ import {
 import { checkDateOfBirth, checkPhoneNumber, checkString, checkValidEmail, checkValidName, checkValidUsername } from "../helpers.js";
 
 router.route("/:id").get(async (req, res) => {
+    //get user with provided id
     try {
         const firebaseUid = req.params.id;
         const user = await getUser(firebaseUid);
@@ -30,6 +31,7 @@ router.route("/:id").get(async (req, res) => {
 });
 
 router.route("/").post(async (req, res) => {
+    //register user
     const addUserFormData = req.body;
     let firstName = xss(addUserFormData.firstName);
     firstName = firstName.trim();
@@ -46,7 +48,6 @@ router.route("/").post(async (req, res) => {
     let firebaseUid = addUserFormData.firebaseUid;
 
     try{
-        console.log('here');
         checkString(firstName, 'First Name');
         checkValidName(firstName, 'First Name');
         checkString(lastName, 'Last Name');
@@ -74,6 +75,7 @@ router.route("/").post(async (req, res) => {
 });
 
 router.route("/socialSignOn").post(async (req, res) => {
+    //register user who signs up with Google
     const addUserFormData = req.body;
     let firstName = xss(addUserFormData.firstName);
     firstName = firstName.trim();
@@ -108,6 +110,7 @@ router.route("/socialSignOn").post(async (req, res) => {
 
 
 router.route("/:id").patch(async (req, res) => {
+    //edit user
     const userId = req.params.id;
     const updateData = req.body;
     let firstName = xss(updateData.firstName);
@@ -146,6 +149,7 @@ router.route("/:id").patch(async (req, res) => {
 });
 
 router.route('/check-username').post(async (req, res) => {
+    //check to see if a username is taken
     const username = req.body.username.trim().toLowerCase();
     try{
         const userCollection = await getAllUsers();
@@ -160,6 +164,7 @@ router.route('/check-username').post(async (req, res) => {
 });
 
 router.route('/check-email').post(async (req, res) => {
+    //checks to see if an email is taken
     const email = req.body.email.trim().toLowerCase();
     try{
         const userCollection = await getAllUsers();

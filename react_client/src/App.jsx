@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Navigation from "./components/Navigation";
 import Home from "./components/Home";
+import RegisterSocialSignOn from "./components/RegisterSocialSignOn";
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path='/register/socialSignOn' element={<RegisterSocialSignOn />} />
+          
         </Routes>
       </div>
     </AuthProvider>
