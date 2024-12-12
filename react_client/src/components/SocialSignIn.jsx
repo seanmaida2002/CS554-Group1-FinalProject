@@ -1,8 +1,10 @@
 import {doSocialSignIn } from "../firebase/FirebaseFunctions";
 import { getAuth } from "firebase/auth";
 import axios from "axios";
+import { useNavigate} from "react-router-dom";
 
-const SocialSignInLogIn = () => {
+const SocialSignIn = () => {
+    const navigate = useNavigate();
 
     const socialSignOn = async () => {
         try {
@@ -17,7 +19,10 @@ const SocialSignInLogIn = () => {
 
             if (emailCheck.data.message === "Email available") {
                 await registerNewUser(auth);
+                const user = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                navigate('/register/socialSignOn');
             }
+            
         } catch (e) {
             console.log(e);
         }
@@ -31,7 +36,7 @@ const SocialSignInLogIn = () => {
             let email = currentUser.email.trim();
             let phoneNumber = "";
             let dateOfBirth = "";
-            let username = currentUser.email.trim();
+            let username = "";
 
             let user = {
                 firstName: firstName,
@@ -63,4 +68,4 @@ const SocialSignInLogIn = () => {
     );
 }
 
-export default SocialSignInLogIn;
+export default SocialSignIn;
