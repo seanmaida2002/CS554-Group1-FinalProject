@@ -16,7 +16,7 @@ const db = await dbConnection();
 // );
 // console.log(user1);
 const event1 = await events.createEvent(
-    "Event Three", 
+    "Event Four", 
     "Soccer", 
     "new york", 
     20, 
