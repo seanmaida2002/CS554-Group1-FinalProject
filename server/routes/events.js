@@ -251,6 +251,7 @@ router
         try{
             eventId = checkID(eventId, 'Event ID')
             newCommentData.comment = checkValidComment(newCommentData.comment);
+            newCommentData.comment = xss(newCommentData.comment);
         }catch(e){
             return res.status(400).json({error: e})
         }
