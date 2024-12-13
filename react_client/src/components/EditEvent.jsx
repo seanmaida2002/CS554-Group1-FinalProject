@@ -69,24 +69,25 @@ function EditEventModal(props){
         let { eventName, sport, location, date, eventSize, tags, description } = data
         if(typeof eventName !== 'string' || eventName.trim() == '' ){
             setError('Invalid Event Name')
-            return
+            return false;
         }
         if(typeof sport !== 'string' || sport.trim() == '' ){
             setError('Invalid Sport')
-            return
+            return false; 
         }
         if(typeof location !== 'string' || location.trim() == '' ){
             setError('Invalid Location')
-            return
+            return false; 
         }
         let dateCheck = checkDate(date,'Date');
         if(!date || dateCheck !== date ){
-            return dateCheck;
+            setError("invalid date")
+            return false;
         }
         if(typeof date !== 'string')
         if(typeof eventSize !== 'number' || eventSize == 0 ){
             setError('Invalid Event Size')
-            return
+            return false;
         }
         if (tags) {
             if (typeof tags === 'string') {
@@ -95,22 +96,22 @@ function EditEventModal(props){
               tags = tags.map((tag) => tag.trim());
             } else {
               setError("Tags must be a string or an array of strings");
-              return "Tags must be a string or an array of strings";
+              return false;
             }
          
             for (let i = 0; i < tags.length; i++) {
               if (!tags[i]) {
                 setError("Each tag must be a non-empty string");
-                return "Each tag must be a non-empty string";
+                return false;
               }
             }
           }
         if(typeof description !== 'string' || description.trim() == '' ){
             setError('Invalid Description')
-            return;
+            return false;
         }
-
-
+        setError('');
+        return true;
     }
 
 
@@ -118,14 +119,11 @@ function EditEventModal(props){
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-       
         let errors = checkData();
-        if(errors){
+        if(errors == false){
             setError(errors);
             return;
         }
-
-
             const auth = getAuth();
             const firebaseUid = auth.currentUser?.uid;
             if(!firebaseUid){
@@ -134,15 +132,26 @@ function EditEventModal(props){
             }
 
 
-            let eventName = document.getElementById('eventName').value;
-            let sport = document.getElementById('sport').value;
-            let location = document.getElementById('location').value;
-            let date = document.getElementById('date').value;
-            let time = document.getElementById('time').value;
-            let eventSize = Number(document.getElementById('eventSize').value);
-            let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
-            let description =  document.getElementById('description').value;
+            // let eventName = document.getElementById('eventName').value;
+            // let sport = document.getElementById('sport').value;
+            // let location = document.getElementById('location').value;
+            // let date = document.getElementById('date').value;
+            // let time = document.getElementById('time').value;
+            // let eventSize = Number(document.getElementById('eventSize').value);
+            // let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
+            // let description =  document.getElementById('description').value;
+            // let id = data._id;
+
+            let eventName = data.eventName
+            let sport = data.sport
+            let location = data.location
+            let date = data.date
+            let time = data.time
+            let eventSize = data.eventSize
+            let tags = data.tags
+            let description =  data.description
             let id = data._id;
+
             try {
                 const response = await axios.patch(`http://localhost:3000/events/${id}`, {
                   eventName: eventName,
@@ -347,10 +356,10 @@ function EditEventModal(props){
             <label>
               Tags (please enter tags seperated by commas):
               <input
-        type="text"
-        id="tags"
-        value={data.tags}
-        onChange={(e) => setData({ ...data, tags: e.target.value })}
+              type="text"
+              id="tags"
+              value={data.tags || ''}
+              onChange={(e) => setData({ ...data, tags: e.target.value })}
               />
             </label>
           </div>
