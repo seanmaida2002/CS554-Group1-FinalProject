@@ -104,7 +104,7 @@ function Home() {
         `http://localhost:3000/events/${eventId}/signUpUser`,
         {
           userId: user.uid,
-          eventOrganizer: eventOrganizer, 
+          eventOrganizer: eventOrganizer,
         }
       );
 
@@ -123,11 +123,13 @@ function Home() {
         `http://localhost:3000/events/${eventId}/unsignUpUser`,
         {
           userId: user.uid,
-          eventOrganizer: eventOrganizer, 
+          eventOrganizer: eventOrganizer,
         }
       );
 
-      setAttendingEvents((prev) => prev.filter((event) => event._id !== eventId));
+      setAttendingEvents((prev) =>
+        prev.filter((event) => event._id !== eventId)
+      );
       alert("You are no longer attending the event!");
     } catch (error) {
       console.error(`Error signing up for event: ${error.message}`);
@@ -135,7 +137,9 @@ function Home() {
   };
   const handleDeleteEvent = async (eventId) => {
     try {
-      await axios.delete(`http://localhost:3000/events/${eventId}?userId=${user.uid}`);
+      await axios.delete(
+        `http://localhost:3000/events/${eventId}?userId=${user.uid}`
+      );
       setMyEvents((prev) => prev.filter((event) => event._id !== eventId));
       setDel(false);
       alert("Event Deleted");
@@ -143,8 +147,6 @@ function Home() {
       console.error(`Error deleting event: ${error.message}`);
     }
   };
-  
-  
 
   if (!user) {
     return (
@@ -219,12 +221,14 @@ function Home() {
                       const isSignedUp = attendingEvents.some(
                         (e) => e._id === event._id
                       );
-                      const myEvent = (event.eventOrganizer === user.uid);
+                      const myEvent = event.eventOrganizer === user.uid;
                       if (isSignedUp && !myEvent) {
                         handleUnsignUp(event._id, event.eventOrganizer);
-                        event.usersSignedUp = event.usersSignedUp.filter((id) => id != user.uid);
+                        event.usersSignedUp = event.usersSignedUp.filter(
+                          (id) => id != user.uid
+                        );
                         otherEvents.push(event);
-                      } else if(!myEvent){
+                      } else if (!myEvent) {
                         handleSignUp(event._id, event.eventOrganizer);
                         event.usersSignedUp.push(user.uid);
                         attendingEvents.push(event);
@@ -241,28 +245,28 @@ function Home() {
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
                 {view === "myEvents" && !del && (
-                    <button
-                      className="delete-button"
-                      onClick={() => setDel(true)}
-                    >
-                      Delete Event
-                    </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => setDel(true)}
+                  >
+                    Delete Event
+                  </button>
                 )}
                 {del && (
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeleteEvent(event._id)}
-                    >
-                      Confirm Delete
-                    </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteEvent(event._id)}
+                  >
+                    Confirm Delete
+                  </button>
                 )}
                 {del && (
-                    <button
-                      className="delete-button"
-                      onClick={() => setDel(false)}
-                    >
-                      Cancel
-                    </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => setDel(false)}
+                  >
+                    Cancel
+                  </button>
                 )}
                 <div className="tags">
                   {event.tags.map((tag, tagIndex) => (
@@ -272,6 +276,12 @@ function Home() {
                   ))}
                 </div>
               </div>
+            </div>
+            <div className="comments">
+              <h3>Comments</h3>
+              {event.comments.map((com, comIndex) =>{
+                <p key={comIndex}>{com.username}: {com.comment}</p>
+              })}
             </div>
           </div>
         ))}
