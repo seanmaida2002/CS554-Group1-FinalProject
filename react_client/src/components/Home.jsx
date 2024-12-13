@@ -257,13 +257,24 @@ function Home() {
                 {view === "myEvents" && (
                                     <div>
                                     <button
-                                      className="button"
-                                      onClick={() => {
-                                        setShowEditForm(!showEditForm)
-                                        setSelectedEvent(event);
-                                      }
-                                      }
-                                    >
+            className="edit-button"
+            onClick={() => {
+                setShowEditForm(!showEditForm);
+                setSelectedEvent(event);
+            }}
+            style={{
+                padding: '20px 40px',
+                fontSize: '20px',
+                border: 'none',
+                backgroundColor: '#c2e7ff', 
+                color: 'black',
+                cursor: 'pointer',
+                borderRadius: '30px',
+                transition: 'background-color 0.3s ease',
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = '#004080')}
+            onMouseOut={(e) => (e.target.style.backgroundColor = '#c2e7ff')}
+        >
                                       Edit Event
                                     </button>
 

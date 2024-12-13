@@ -28,7 +28,7 @@ const NavigationAuth = () => { //only display these links in the navigation bar 
                     
                     <NavLink to='/profile'><img className='navigation-profile' alt='profile image' src='./imgs/profile-icon-white.png'/> </NavLink>
                 </li>
-                <button className='button' onClick={() => setShowAddForm(!showAddForm)}>
+                <button className='button-create' onClick={() => setShowAddForm(!showAddForm)}>
           Create Event
         </button>
         {showAddForm && (

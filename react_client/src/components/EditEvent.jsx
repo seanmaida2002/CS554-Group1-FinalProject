@@ -18,10 +18,32 @@ const customStyles = {
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
         width: '50%',
-        border: '1px solid #28547a',
-        borderRadius: '4px'
-    }
+        padding: '20px',
+        backgroundColor: '#ffffff',
+        border: '2px solid #c2e7ff',
+        borderRadius: '20px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    },
+    overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
 };
+
+const buttonStyles = {
+    padding: '20px 40px',
+    fontSize: '20px',
+    border: 'none',
+    backgroundColor: '#c2e7ff',
+    color: 'black',
+    cursor: 'pointer',
+    borderRadius: '30px',
+    transition: 'background-color 0.3s ease',
+};
+
+const buttonHoverStyles = {
+    backgroundColor: '#004080', 
+    color: 'white', 
+}
 
 
 function EditEventModal(props){
@@ -342,8 +364,14 @@ function EditEventModal(props){
               />
             </label>
           </div>
-          <button type="submit">Edit Event</button>
-          <button type="button" onClick={handleCloseEditModal}>Cancel</button>
+          <button type="submit"
+                    style={buttonStyles}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}>Edit Event</button>
+          <button type="button" onClick={handleCloseEditModal}
+                    style={buttonStyles}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}>Cancel</button>
         </form>
       </ReactModal>
     </div>
