@@ -12,8 +12,9 @@ function Home() {
   const [attendingEvents, setAttendingEvents] = useState([]);
   const [filteredSport, setFilteredSport] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const [view, setView] = useState("otherEvents");
+  const [view, setView] = useState("myEvents");
   const [del, setDel] = useState(false);
+  const [newComment, setNewComment] = useState({});
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -148,6 +149,38 @@ function Home() {
     }
   };
 
+  const handleCommentChange = (eventId, value) => {
+    setNewComment((prev) => ({ ...prev, [eventId]: value }));
+  };
+
+  const handleAddComment = async (eventId, username) => {
+    if (!user) return;
+  
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/events/${eventId}/comments`,
+        {
+          userId: user.uid,
+          username: username,
+          comment: newComment[eventId],
+        }
+      );
+  
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event._id === eventId
+            ? { ...event, comments: response.data.comments } 
+            : event
+        )
+      );
+  
+      setNewComment((prev) => ({ ...prev, [eventId]: "" })); 
+    } catch (error) {
+      console.error(`Error adding comment: ${error.message}`);
+    }
+  };
+  
+
   if (!user) {
     return (
       <div>
@@ -278,10 +311,24 @@ function Home() {
               </div>
             </div>
             <div className="comments">
-              <h3>Comments</h3>
-              {event.comments.map((com, comIndex) =>{
-                <p key={comIndex}>{com.username}: {com.comment}</p>
-              })}
+              <h3>Comments:</h3>
+              {event.comments.map((com, index) => (
+                <p key={index}>
+                  <strong>{com.username}</strong>: {com.comment}
+                </p>
+              ))}
+              <input
+                type="text"
+                className="add"
+                placeholder="Add a comment"
+                value={newComment[event._id] || ""}
+                onChange={(e) => handleCommentChange(event._id, e.target.value)}
+              />
+              <button
+                onClick={() => handleAddComment(event._id, userInfo?.username)}
+              >
+                Submit
+              </button>
             </div>
           </div>
         ))}
