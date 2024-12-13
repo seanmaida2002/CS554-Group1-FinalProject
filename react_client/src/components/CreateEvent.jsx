@@ -93,7 +93,7 @@ function CreateEventModal(props){
                 }
                 tags[i] = tags[i].trim();
               }
-            } else {
+            } else if(!tags || typeof tags!== 'string' || tags.trim()==""){
               setError("tags must be an array of strings");
               return
             }
@@ -163,16 +163,19 @@ function CreateEventModal(props){
             <label>
               Event Name:
             <input
-            type="text"
-            id="eventName"
-            autoFocus
+              type="text"
+              id="eventName"
+              value={data.eventName || ''}
+              onChange={(e) => setData({ ...data, eventName: e.target.value })}
             />
             </label>
           </div>
           <div>
             <label>
               Sport:
-              <select id="sport">
+              <select id="sport"
+              value={data.sport || ''}
+              onChange={(e) => setData({ ...data, sport: e.target.value })}>
                 <option value="">Please choose a sport!</option>
                 <option value="Soccer">Soccer</option>
                 <option value="Basketball">Basketball</option>
@@ -189,15 +192,19 @@ function CreateEventModal(props){
             <label>
               Date (please enter in format MM/DD/YYYY):
               <input
-                type="text"
-                id="date"
+              type="text"
+              id="date"
+              value={data.date || ''}
+              onChange={(e) => setData({ ...data, date: e.target.value })}
               />
             </label>
           </div>
           <div>
             <label>
               Time:
-              <select id="time">
+              <select id="time"
+              value={data.time || ''}
+              onChange={(e) => setData({ ...data, time: e.target.value })}>
                 <option value="">Select a time!</option>
                 <option value="12:00 AM">12:00 AM</option>
                 <option value="12:15 AM">12:15 AM</option>
@@ -302,8 +309,10 @@ function CreateEventModal(props){
             <label>
               Location:
               <input
-                type="text"
-                id="location"
+              type="text"
+              id="location"
+              value={data.location || ''}
+              onChange={(e) => setData({ ...data, location: e.target.value })}
               />
             </label>
           </div>
@@ -311,8 +320,10 @@ function CreateEventModal(props){
             <label>
               Event Size:
               <input
-                type="number"
-                id="eventSize"
+              type="number"
+              id="eventSize"
+              value={data.eventSize || ''}
+              onChange={(e) => setData({ ...data, eventSize: e.target.value })}
               />
             </label>
           </div>
@@ -320,8 +331,10 @@ function CreateEventModal(props){
             <label>
               Tags (please enter tags seperated by commas):
               <input
-                type="text"
-                id="tags"
+              type="text"
+              id="tags"
+              value={data.tags || ''}
+              onChange={(e) => setData({ ...data, tags: e.target.value })}
               />
             </label>
           </div>
@@ -329,7 +342,10 @@ function CreateEventModal(props){
             <label>
               Description:
               <textarea
-                id="description"
+              type="text"
+              id="description"
+              value={data.description || ''}
+              onChange={(e) => setData({ ...data, description: e.target.value })}
               />
             </label>
           </div>
