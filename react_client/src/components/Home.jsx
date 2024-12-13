@@ -3,6 +3,7 @@ import "../App.css";
 import "./Home.css";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
+import EditEventModal from "./EditEvent";
 
 function Home() {
   const [events, setEvents] = useState(null);
@@ -14,9 +15,17 @@ function Home() {
   const [userInfo, setUserInfo] = useState(null);
   const [view, setView] = useState("otherEvents");
   const [del, setDel] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const auth = getAuth();
   const user = auth.currentUser;
+
+  const closeEditFormState = () => {
+    setShowEditForm(false);
+    setSelectedEvent(null);
+};
+
 
   useEffect(() => {
     const getEvents = async () => {
@@ -244,6 +253,31 @@ function Home() {
                 <img alt="park" src="./imgs/park.jpg" />
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
+
+                {view === "myEvents" && (
+                                    <div>
+                                    <button
+                                      className="button"
+                                      onClick={() => {
+                                        setShowEditForm(!showEditForm)
+                                        setSelectedEvent(event);
+                                      }
+                                      }
+                                    >
+                                      Edit Event
+                                    </button>
+
+
+                                    {showEditForm && (
+                                      <EditEventModal
+                                      isOpen={showEditForm}
+                                      handleClose={closeEditFormState}
+                                      eventData={selectedEvent}
+                                      />
+                                    )}
+                                </div>
+                                )}
+
                 {view === "myEvents" && !del && (
                   <button
                     className="delete-button"
