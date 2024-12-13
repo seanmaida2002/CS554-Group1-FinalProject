@@ -1,11 +1,24 @@
 body {
   background-color: #e9eef6;
 }
+
+
 .events {
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); /* Responsive 1 or 2 columns */
   gap: 20px;
   margin: 20px;
 }
+
+.event-card {
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 20px;
+  background-color: #ffffff;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 
 .otherEvents,
 .attendingEvents,
@@ -26,14 +39,6 @@ body {
   height: auto;
   margin: 0 auto;
   border-radius: 20px;
-}
-.event-card {
-  padding: 16px;
-  margin: 16px 0;
-  border-radius: 20px;
-  background-color: #ffffff;
-  text-align: left;
-  justify-content: left;
 }
 
 .event-card h2 {
@@ -201,5 +206,9 @@ body {
   
   .signed:hover {
     background-color: #d0d0d0;
+  }
+
+  .comments{
+    display: block;
   }
   
