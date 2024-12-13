@@ -3,6 +3,7 @@ import "../App.css";
 import "./Home.css";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
+import EditEventModal from "./EditEvent";
 
 function Home() {
   const [events, setEvents] = useState(null);
@@ -14,10 +15,18 @@ function Home() {
   const [userInfo, setUserInfo] = useState(null);
   const [view, setView] = useState("myEvents");
   const [del, setDel] = useState(false);
-  const [newComment, setNewComment] = useState({});
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+   const [newComment, setNewComment] = useState({});
 
   const auth = getAuth();
   const user = auth.currentUser;
+
+  const closeEditFormState = () => {
+    setShowEditForm(false);
+    setSelectedEvent(null);
+};
+
 
   useEffect(() => {
     const getEvents = async () => {
@@ -299,6 +308,42 @@ function Home() {
                 <img alt="park" src="./imgs/park.jpg" />
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
+
+                {view === "myEvents" && (
+                                    <div>
+                                    <button
+            className="edit-button"
+            onClick={() => {
+                setShowEditForm(!showEditForm);
+                setSelectedEvent(event);
+            }}
+            style={{
+                padding: '20px 40px',
+                fontSize: '20px',
+                border: 'none',
+                backgroundColor: '#c2e7ff', 
+                color: 'black',
+                cursor: 'pointer',
+                borderRadius: '30px',
+                transition: 'background-color 0.3s ease',
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = '#004080')}
+            onMouseOut={(e) => (e.target.style.backgroundColor = '#c2e7ff')}
+        >
+                                      Edit Event
+                                    </button>
+
+
+                                    {showEditForm && (
+                                      <EditEventModal
+                                      isOpen={showEditForm}
+                                      handleClose={closeEditFormState}
+                                      eventData={selectedEvent}
+                                      />
+                                    )}
+                                </div>
+                                )}
+
                 {view === "myEvents" && !del && (
                   <button
                     className="delete-button"
