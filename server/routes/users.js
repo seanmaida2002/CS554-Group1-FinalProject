@@ -46,6 +46,7 @@ router.route("/").post(async (req, res) => {
     let dateOfBirth = xss(addUserFormData.dateOfBirth);
     dateOfBirth = dateOfBirth.trim();
     let firebaseUid = addUserFormData.firebaseUid;
+    let imageUrl = addUserFormData.imageUrl;
 
     try{
         checkString(firstName, 'First Name');
@@ -65,6 +66,7 @@ router.route("/").post(async (req, res) => {
             email,
             phoneNumber,
             dateOfBirth,
+            imageUrl,
             firebaseUid
         );
         return res.status(200).json(newUser);

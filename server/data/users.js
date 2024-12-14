@@ -17,6 +17,7 @@ export const createUser = async ( //need to add profile picture
     email,
     phoneNumber,
     dateOfBirth,
+    imageUrl,
     firebaseUid
 ) => {
     checkString(firstName, 'firstName');
@@ -50,6 +51,7 @@ export const createUser = async ( //need to add profile picture
         phoneNumber: phoneNumber,
         dateOfBirth: dateOfBirth,
         overThirteen: overThirteen,
+        imageUrl: imageUrl,
         eventsMade: [],
         eventsAttending: []
     };
