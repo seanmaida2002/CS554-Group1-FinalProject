@@ -5,6 +5,7 @@ import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions'
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
+import { UploadImage } from './UploadImage';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
 import SocialSignIn from './SocialSignIn';
@@ -14,10 +15,26 @@ function Register() {
     const [pwMatch, setPWMatch] = useState('');
     const [error, setError] = useState('');
     const [file, setFile] = useState();
+    const [image, setImage] = useState(null);
 
-    const uploadFile = (e) => {
-        setFile(URL.createObjectURL(e.target.files[0]));
-    }
+    const uploadFile = async (e) => {
+        const selectedFile = e.target.files[0];
+        if(selectedFile){
+            setFile(URL.createObjectURL(selectedFile));
+            setImage(selectedFile);
+        }
+    };
+
+    const handleUpload = async () => {
+        try{
+            const auth = getAuth();
+            const currentUser = auth.currentUser
+            const imageUrl = await UploadImage(image, currentUser);
+            return imageUrl;
+        } catch(e){
+            console.log('Error uploading image:', e);
+        }
+    };
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -91,6 +108,8 @@ function Register() {
 
             const auth = getAuth();
             const firebaseUid = auth.currentUser.uid;
+            const imageUrl = await handleUpload();
+            console.log('imageurl:',imageUrl);
             const user = {
                 firstName: firstName.value,
                 lastName: lastName.value,
@@ -98,6 +117,7 @@ function Register() {
                 email: email.value,
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
+                imageUrl: imageUrl,
                 firebaseUid: firebaseUid
             };
             const createUser = await axios.post('http://localhost:3000/user', user, {
@@ -105,6 +125,8 @@ function Register() {
                     'Content-Type': 'application/json'
                 }
             });
+
+            
 
         } catch (e) {
             if (e.response && e.response.data) {
