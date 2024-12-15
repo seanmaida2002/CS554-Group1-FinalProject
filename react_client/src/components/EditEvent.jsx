@@ -6,6 +6,8 @@ import { getAuth } from 'firebase/auth';
 import { checkDate } from '../helpers';
 
 
+
+
 ReactModal.setAppElement('#root');
 const customStyles = {
     content: {
@@ -42,95 +44,116 @@ const buttonHoverStyles = {
     backgroundColor: '#004080', 
     color: 'white', 
 }
-function CreateEventModal(props){
-    const [showCreateModal, setShowCreateModal] = useState(props.isOpen);
-    const [data, setData] = useState({
-        eventName:'',
-        sport:'',
-        location:'',
-        date:'',
-        time:'',
-        eventSize:'',
-        tags:'',
-        description:''
-    });
+
+
+function EditEventModal(props){
+    const [showEditModal, setShowEditModal] = useState(props.isOpen);
+    const [data, setData] = useState(props.eventData || {});
     const [error, setError] = useState('');
 
-    const handleCloseCreateModal = () => {
-        setShowCreateModal(false);
+
+    useEffect(() => {
+        if (props.eventData) {
+          setData(props.eventData);
+        }
+      }, [props.eventData]);
+
+
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
         props.handleClose();
     };
+
 
     const checkData = () =>{
         let { eventName, sport, location, date, eventSize, tags, description } = data
         if(typeof eventName !== 'string' || eventName.trim() == '' ){
             setError('Invalid Event Name')
-            return
+            return false;
         }
         if(typeof sport !== 'string' || sport.trim() == '' ){
             setError('Invalid Sport')
-            return
+            return false; 
         }
         if(typeof location !== 'string' || location.trim() == '' ){
             setError('Invalid Location')
-            return
+            return false; 
         }
         let dateCheck = checkDate(date,'Date');
         if(!date || dateCheck !== date ){
-            return dateCheck;
+            setError("invalid date")
+            return false;
         }
         if(typeof date !== 'string')
         if(typeof eventSize !== 'number' || eventSize == 0 ){
             setError('Invalid Event Size')
-            return
+            return false;
         }
-        if(tags){
-            if (Array.isArray(tags)) {
-              for (let i = 0; i < tags.length; i++) {
-                if (typeof tags[i] !== 'string' || !tags[i].trim()) {
-                  setError("Each tag must be a non-empty string");
-                  return
-                }
-                tags[i] = tags[i].trim();
+        if (tags) {
+            if (typeof tags === 'string') {
+              tags = [tags.trim()];
+            } else if (Array.isArray(tags)) {
+              tags = tags.map((tag) => tag.trim());
+            } else {
+              setError("Tags must be a string or an array of strings");
+              return false;
+            }
+         
+            for (let i = 0; i < tags.length; i++) {
+              if (!tags[i]) {
+                setError("Each tag must be a non-empty string");
+                return false;
               }
-            } else if(!tags || typeof tags!== 'string' || tags.trim()==""){
-              setError("tags must be an array of strings");
-              return
             }
           }
         if(typeof description !== 'string' || description.trim() == '' ){
             setError('Invalid Description')
-            return
+            return false;
         }
-
+        setError('');
+        return true;
     }
+
+
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         let errors = checkData();
-        if(errors){
+        if(errors == false){
             setError(errors);
-            return
+            return;
         }
-
             const auth = getAuth();
             const firebaseUid = auth.currentUser?.uid;
             if(!firebaseUid){
                 setError('Error with firebase user id')
-                return
+                return;
             }
 
-            let eventName = document.getElementById('eventName').value;
-            let sport = document.getElementById('sport').value;
-            let location = document.getElementById('location').value;
-            let date = document.getElementById('date').value;
-            let time = document.getElementById('time').value;
-            let eventSize = Number(document.getElementById('eventSize').value);
-            let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
-            let description =  document.getElementById('description').value;
+
+            // let eventName = document.getElementById('eventName').value;
+            // let sport = document.getElementById('sport').value;
+            // let location = document.getElementById('location').value;
+            // let date = document.getElementById('date').value;
+            // let time = document.getElementById('time').value;
+            // let eventSize = Number(document.getElementById('eventSize').value);
+            // let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
+            // let description =  document.getElementById('description').value;
+            // let id = data._id;
+
+            let eventName = data.eventName
+            let sport = data.sport
+            let location = data.location
+            let date = data.date
+            let time = data.time
+            let eventSize = data.eventSize
+            let tags = data.tags
+            let description =  data.description
+            let id = data._id;
+
             try {
-                const response = await axios.post('http://localhost:3000/events/', {
+                const response = await axios.patch(`http://localhost:3000/events/${id}`, {
                   eventName: eventName,
                   sport: sport,
                   location: location,
@@ -139,34 +162,35 @@ function CreateEventModal(props){
                   eventOrganizer: firebaseUid,
                   description: description,
                   date: date ,
-                  time: time
+                  time: time ,
+                  userId: firebaseUid
                 });
-                alert ('Event Created!');
-                handleCloseCreateModal();
+                alert ('Event updated!');
+                handleCloseEditModal();
                 window.location.reload();
     }catch(e){
-        setError(e.response?.data?.message || 'Could not create event')
+        setError(e.response?.data?.message || 'Could not edit event')
     }
 };
     return (
         <div>
             <ReactModal
-        name="createEventModal"
+        name="EditEventModal"
         isOpen={props.isOpen}
-        contentLabel="Create Event"
+        contentLabel="Edit Event"
         style={customStyles}
-        onRequestClose={handleCloseCreateModal}
+        onRequestClose={handleCloseEditModal}
       >
-        <form className="createEvent-form" onSubmit={handleSubmit}>
+        <form className="editEvent-form" onSubmit={handleSubmit}>
           {error && <h4 className="error">{error}</h4>}
           <div>
             <label>
               Event Name:
             <input
-              type="text"
-              id="eventName"
-              value={data.eventName || ''}
-              onChange={(e) => setData({ ...data, eventName: e.target.value })}
+            type="text"
+            id="eventName"
+            value={data.eventName}
+            onChange={(e) => setData({ ...data, eventName: e.target.value })}
             />
             </label>
           </div>
@@ -174,8 +198,8 @@ function CreateEventModal(props){
             <label>
               Sport:
               <select id="sport"
-              value={data.sport || ''}
-              onChange={(e) => setData({ ...data, sport: e.target.value })}>
+                value={data.sport}
+                onChange={(e) => setData({ ...data, sport: e.target.value })}>
                 <option value="">Please choose a sport!</option>
                 <option value="Soccer">Soccer</option>
                 <option value="Basketball">Basketball</option>
@@ -192,19 +216,20 @@ function CreateEventModal(props){
             <label>
               Date (please enter in format MM/DD/YYYY):
               <input
-              type="text"
-              id="date"
-              value={data.date || ''}
-              onChange={(e) => setData({ ...data, date: e.target.value })}
+        type="text"
+        id="date"
+        value={data.date}
+        onChange={(e) => setData({ ...data, date: e.target.value })}
               />
             </label>
           </div>
           <div>
             <label>
               Time:
-              <select id="time"
-              value={data.time || ''}
-              onChange={(e) => setData({ ...data, time: e.target.value })}>
+              <select
+                id="time"
+                value={data.time}
+                onChange={(e) => setData({ ...data, time: e.target.value })}>
                 <option value="">Select a time!</option>
                 <option value="12:00 AM">12:00 AM</option>
                 <option value="12:15 AM">12:15 AM</option>
@@ -309,10 +334,10 @@ function CreateEventModal(props){
             <label>
               Location:
               <input
-              type="text"
-              id="location"
-              value={data.location || ''}
-              onChange={(e) => setData({ ...data, location: e.target.value })}
+        type="text"
+        id="location"
+        value={data.location}
+        onChange={(e) => setData({ ...data, location: e.target.value })}
               />
             </label>
           </div>
@@ -320,10 +345,10 @@ function CreateEventModal(props){
             <label>
               Event Size:
               <input
-              type="number"
-              id="eventSize"
-              value={data.eventSize || ''}
-              onChange={(e) => setData({ ...data, eventSize: e.target.value })}
+        type="number"
+        id="eventSize"
+        value={data.eventSize}
+        onChange={(e) => setData({ ...data, eventSize: e.target.value })}
               />
             </label>
           </div>
@@ -342,26 +367,23 @@ function CreateEventModal(props){
             <label>
               Description:
               <textarea
-              type="text"
               id="description"
-              value={data.description || ''}
+              value={data.description}
               onChange={(e) => setData({ ...data, description: e.target.value })}
               />
             </label>
           </div>
           <button type="submit"
-          style={buttonStyles}
-          onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
-          >Create Event</button>
-          <button type="button" onClick={handleCloseCreateModal}
-          style={buttonStyles}
-          onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
-          >Cancel</button>
+                    style={buttonStyles}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}>Edit Event</button>
+          <button type="button" onClick={handleCloseEditModal}
+                    style={buttonStyles}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}>Cancel</button>
         </form>
       </ReactModal>
     </div>
   );
 }
-export default CreateEventModal
+export default EditEventModal
