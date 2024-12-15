@@ -5,6 +5,8 @@ import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions'
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
+import { UploadProfileImage } from './UploadImage';
+import {getStorage, getDownloadURL, ref} from 'firebase/storage';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
 import SocialSignIn from './SocialSignIn';
@@ -13,7 +15,28 @@ function Register() {
     const { currentUser } = useContext(AuthContext);
     const [pwMatch, setPWMatch] = useState('');
     const [error, setError] = useState('');
+    const [file, setFile] = useState();
+    const [image, setImage] = useState('');
+    // const [imageUrl, setImageUrl] = useState(null);
 
+    const uploadFile = async (e) => {
+        const selectedFile = e.target.files[0];
+        if(selectedFile){
+            setFile(URL.createObjectURL(selectedFile));
+            setImage(selectedFile);
+        }
+    };
+
+    const handleUpload = async () => {
+        try{
+            const auth = getAuth();
+            const currentUser = auth.currentUser
+            const url = await UploadProfileImage(image, currentUser);
+            return url;
+        } catch(e){
+            console.log('Error uploading image:', e);
+        }
+    };
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -39,45 +62,45 @@ function Register() {
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             //Error Checking
             let firstNameError = checkValidName(firstName.value.trim(), 'First Name')
-            if(firstNameError !== firstName.value.trim()){
+            if (firstNameError !== firstName.value.trim()) {
                 setError(firstNameError);
                 return;
             }
             let lastNameError = checkValidName(lastName.value.trim(), 'Last Name');
-            if(lastNameError !== lastName.value.trim()){
+            if (lastNameError !== lastName.value.trim()) {
                 setError(lastNameError);
                 return;
             }
             let dobError = checkDate(dateOfBirth.value.trim(), "Date of Birth");
-            if(dobError !== dateOfBirth.value.trim()){
+            if (dobError !== dateOfBirth.value.trim()) {
                 setError(dobError);
                 return;
             }
             let phoneNumberError = checkPhoneNumber(phoneNumber.value.trim(), "Phone Number");
-            if(phoneNumberError !== phoneNumber.value.trim()){
+            if (phoneNumberError !== phoneNumber.value.trim()) {
                 setError(phoneNumberError);
                 return;
             }
             let emailError = checkValidEmail(email.value.trim(), "Email");
-            if(emailError !== email.value.trim()){
+            if (emailError !== email.value.trim()) {
                 setError(emailError);
                 return;
             }
             let usernameError = checkValidUsername(username.value.trim());
-            if(usernameError !== username.value.trim()){
+            if (usernameError !== username.value.trim()) {
                 setError(usernameError);
                 return;
             }
             let validAge = checkValidAge(dateOfBirth.value.trim(), "Date of Birth");
-            if(validAge !== true){
+            if (validAge !== true) {
                 setError(validAge);
                 return;
             }
             let validPassword = checkValidPassword(passwordOne.value.trim(), "Password");
-            if(validPassword !== true){
+            if (validPassword !== true) {
                 setError(validPassword);
                 return;
             }
@@ -87,6 +110,8 @@ function Register() {
 
             const auth = getAuth();
             const firebaseUid = auth.currentUser.uid;
+            const imageUrl = await handleUpload();
+            const imagePath = `images/userProfileImage/${firebaseUid}/${image.name}`
             const user = {
                 firstName: firstName.value,
                 lastName: lastName.value,
@@ -94,6 +119,8 @@ function Register() {
                 email: email.value,
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
+                imageUrl: imageUrl,
+                imagePath: imagePath,
                 firebaseUid: firebaseUid
             };
             const createUser = await axios.post('http://localhost:3000/user', user, {
@@ -102,8 +129,10 @@ function Register() {
                 }
             });
 
+            
+
         } catch (e) {
-            if(e.response && e.response.data){
+            if (e.response && e.response.data) {
                 setError(e.response.data.error);
             }
             alert(e);
@@ -122,6 +151,16 @@ function Register() {
             {pwMatch && <h4 className='error'>{pwMatch}</h4>}
             {error && <h4 className='error'>{error}</h4>}
             <form onSubmit={handleSignUp}>
+                <div className='register-profile-picture-wrapper'>
+                    <label>Profile Picture:</label>
+                    <input type='file' accept='image/*' multiple={false} onChange={uploadFile} />
+                    <br />
+                    <br />
+                    <div className='register-profile-picture-container'>
+                        <img className='register-profile-picture' src={file} alt='Profile Picture' />
+                    </div>
+                </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         First Name:
@@ -223,7 +262,7 @@ function Register() {
                 </button>
             </form>
             <br />
-            {<SocialSignIn/>}
+            {<SocialSignIn />}
         </div>
     );
 }
