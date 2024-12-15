@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import SocialSignIn from "./SocialSignIn";
 import {Navigate} from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 function Login() {
     const {currentUser} = useContext(AuthContext);
+    const [error, setError] = useState('');
     
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -14,8 +15,12 @@ function Login() {
 
         try{
             await doSignInWithEmailAndPassword(email.value, password.value);
+            setError('');
         } catch(e){
-            alert(e);
+            console.log(e);
+            if(e.code === 'auth/invalid-credential'){
+                setError('Email or password is incorrect');
+            }
         }
     };
 
@@ -26,14 +31,13 @@ function Login() {
             doPasswordReset(email);
             alert("Password reset email was sent");
         } else{
-            alert("Please enter an email address below before you click the forgot password link");
+            setError("Please enter an email address below before you click the forgot password link");
         }
     };
 
     if(currentUser){
         return <Navigate to='/home' replace={true} />
     }
-
     return (
         <div>
             <div className="card">
@@ -72,6 +76,7 @@ function Login() {
                     <br />
                     <button className="forgotPassword" onClick={passwordReset}>Forgot Password</button>
                 </form>
+                {error && <h4 className='error'>{error}</h4>}
                 <br />
                 <SocialSignIn />
             </div>
