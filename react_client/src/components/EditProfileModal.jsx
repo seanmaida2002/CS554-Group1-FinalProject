@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import axios from 'axios';
 import { getAuth, updateEmail } from 'firebase/auth';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
+import { UploadProfileImage, DeleteProfileImage } from './UploadImage';
 
 ReactModal.setAppElement('#root');
 const customStyles = {
@@ -24,10 +25,40 @@ function EditProfileModal(props) {
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [profile, setProfile] = useState(props.profile);
     const [error, setError] = useState('');
+    const [file, setFile] = useState();
+    const [image, setImage] = useState('');
     const auth = getAuth();
     const firebaseUid = auth.currentUser.uid;
     //get profile information from server
     //edit profile from data functions
+
+    const uploadFile = async (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(URL.createObjectURL(selectedFile));
+            setImage(selectedFile);
+        }
+    };
+
+    const handleUpload = async () => {
+        try {
+            const auth = getAuth();
+            const currentUser = auth.currentUser
+            const url = await UploadProfileImage(image, currentUser);
+            return url;
+        } catch (e) {
+            console.log('Error uploading image:', e);
+        }
+    };
+
+    const handleDeleteImage = (imagePath) => {
+        try {
+            const currentUser = auth.currentUser;
+            const deleteImage = DeleteProfileImage(currentUser, imagePath);
+        } catch (e) {
+            console.log('Error deleting image:', e);
+        }
+    }
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
@@ -73,24 +104,35 @@ function EditProfileModal(props) {
                 setError(emailError);
                 return;
             }
-            let usernameError = checkValidUsername(username.value.trim());
-            if (usernameError !== username.value.trim()) {
-                setError(usernameError);
-                return;
+            if (username.value.trim() !== profile.username) {
+                let usernameError = checkValidUsername(username.value.trim());
+                if (usernameError !== username.value.trim()) {
+                    setError(usernameError);
+                    return;
+                }
+                const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
             }
 
-            const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            
             let validAge = checkValidAge(dateOfBirth.value.trim(), "Date of Birth");
             if (validAge !== true) {
                 setError(validAge);
                 return;
             }
+
+            let newImageUrl = profile.imageUrl;
+            if (image) {
+                if (profile.imageUrl) {
+                    const user = await axios.get(`http://localhost:3000/user/${auth.currentUser.uid}`)
+                    const imagePath = user.data.imagePath;
+                    handleDeleteImage(imagePath);
+                }
+                newImageUrl = await handleUpload();
+            }
+            const imagePath = `images/userProfileImage/${auth.currentUser.uid}/${image.name}`;
 
             const updateProfile = {
                 firstName: firstName.value,
@@ -98,8 +140,12 @@ function EditProfileModal(props) {
                 username: username.value,
                 email: email.value,
                 phoneNumber: phoneNumber.value,
-                dateOfBirth: dateOfBirth.value
+                dateOfBirth: dateOfBirth.value,
+                imageUrl: newImageUrl,
+                imagePath: imagePath
             };
+
+            setError('');
 
             auth.currentUser.displayName = firstName.value + " " + lastName.value;
             const update = await axios.patch(`http://localhost:3000/user/${firebaseUid}`, updateProfile);
@@ -115,7 +161,7 @@ function EditProfileModal(props) {
         }
     };
 
-    
+
     return (
         <div>
             <ReactModal
@@ -143,6 +189,16 @@ function EditProfileModal(props) {
                         props.handleClose();
                     }}
                 >
+                    <div className='edit-profile-picture-wrapper'>
+                        <label>Change Profile Picture:</label>
+                        <input type='file' accept='image/*' multiple={false} onChange={uploadFile} />
+                        <br />
+                        <br />
+                        <div className='edit-profile-picture-container'>
+                            <img className='edit-profile-picture' src={file} alt='Profile Picture' />
+                        </div>
+                    </div>
+                    <br />
                     <div className='editProfile-form'>
                         {error && <h4 className='error'>{error}</h4>}
                         <label>
@@ -214,7 +270,7 @@ function EditProfileModal(props) {
                             (
                                 <label>
                                     Email: {profile.email}
-                                    <input style={{display:"none"}}
+                                    <input style={{ display: "none" }}
                                         ref={(node) => {
                                             email = node;
                                         }}

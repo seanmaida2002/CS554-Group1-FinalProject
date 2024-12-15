@@ -228,17 +228,21 @@
     transition: 0.2s ease-in-out all;
 }
 
-.register-profile-picture {
+.register-profile-picture,
+.edit-profile-picture {
     width: 100%;
     height: 100%;
 }
 
-.register-profile-picture-container {
+.register-profile-picture-container,
+.edit-profile-picture-container {
     height: 100px;
     width: 100px;
     border: 2px dashed black;
+}
+
+.register-profile-picture-container{
     display: block;
     margin-left: auto;
     margin-right: auto;
-
 }

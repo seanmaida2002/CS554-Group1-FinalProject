@@ -5,7 +5,7 @@ import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions'
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
-import { UploadImage } from './UploadImage';
+import { UploadProfileImage } from './UploadImage';
 import {getStorage, getDownloadURL, ref} from 'firebase/storage';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
@@ -31,7 +31,7 @@ function Register() {
         try{
             const auth = getAuth();
             const currentUser = auth.currentUser
-            const url = await UploadImage(image, currentUser);
+            const url = await UploadProfileImage(image, currentUser);
             return url;
         } catch(e){
             console.log('Error uploading image:', e);
@@ -111,6 +111,7 @@ function Register() {
             const auth = getAuth();
             const firebaseUid = auth.currentUser.uid;
             const imageUrl = await handleUpload();
+            const imagePath = `images/userProfileImage/${firebaseUid}/${image.name}`
             const user = {
                 firstName: firstName.value,
                 lastName: lastName.value,
@@ -119,6 +120,7 @@ function Register() {
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
                 imageUrl: imageUrl,
+                imagePath: imagePath,
                 firebaseUid: firebaseUid
             };
             const createUser = await axios.post('http://localhost:3000/user', user, {
