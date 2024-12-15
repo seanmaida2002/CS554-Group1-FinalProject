@@ -15,27 +15,28 @@ const NavigationAuth = () => { //only display these links in the navigation bar 
 
     const closeAddFormState = () => {
         setShowAddForm(false);
-      };
-    
-    
+    };
+
+
     return (
         <nav className='navigation'>
             <ul className='navbar-links-container'>
                 <li className='navbar-links'>
                     <NavLink to='/home'>Home</NavLink>
                 </li>
+                <button className='create-event-button' onClick={() => setShowAddForm(!showAddForm)}>
+                    Create Event
+                </button>
+
                 <li className='navbar-links'>
-                    
-                    <NavLink to='/profile'><img className='navigation-profile' alt='profile image' src='./imgs/profile-icon-white.png'/> </NavLink>
+                    <NavLink to='/profile'><img className='navigation-profile' alt='profile image' src='./imgs/profile-icon-white.png' /> </NavLink>
                 </li>
-                <button className='button' onClick={() => setShowAddForm(!showAddForm)}>
-          Create Event
-        </button>
-        {showAddForm && (
-          <CreateEventModal 
-          isOpen={showAddForm}
-          handleClose={closeAddFormState} />
-        )}
+
+                {showAddForm && (
+                    <CreateEventModal
+                        isOpen={showAddForm}
+                        handleClose={closeAddFormState} />
+                )}
             </ul>
         </nav>
     );
