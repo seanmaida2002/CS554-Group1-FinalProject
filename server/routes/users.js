@@ -47,6 +47,7 @@ router.route("/").post(async (req, res) => {
     dateOfBirth = dateOfBirth.trim();
     let firebaseUid = addUserFormData.firebaseUid;
     let imageUrl = addUserFormData.imageUrl;
+    let imagePath = addUserFormData.imagePath;
 
     try{
         checkString(firstName, 'First Name');
@@ -67,6 +68,7 @@ router.route("/").post(async (req, res) => {
             phoneNumber,
             dateOfBirth,
             imageUrl,
+            imagePath,
             firebaseUid
         );
         return res.status(200).json(newUser);
@@ -127,6 +129,8 @@ router.route("/:id").patch(async (req, res) => {
     dateOfBirth = dateOfBirth.trim();
     let phoneNumber = xss(updateData.phoneNumber);
     phoneNumber = phoneNumber.trim();
+    let imageUrl = xss(updateData.imageUrl);
+    let imagePath = xss(updateData.imagePath);
     
     try {
         let updateObj = {};
@@ -136,6 +140,8 @@ router.route("/:id").patch(async (req, res) => {
         if(email) updateObj.email = email;
         if(dateOfBirth) updateObj.dateOfBirth = dateOfBirth;
         if(phoneNumber) updateObj.phoneNumber = phoneNumber;
+        if(imageUrl) updateObj.imageUrl = imageUrl;
+        if(imagePath) updateObj.imagePath = imagePath;
 
         const updatedUser = await updateUser(userId, updateObj);
 
