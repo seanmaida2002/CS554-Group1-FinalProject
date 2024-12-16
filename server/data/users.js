@@ -17,6 +17,8 @@ export const createUser = async ( //need to add profile picture
     email,
     phoneNumber,
     dateOfBirth,
+    imageUrl,
+    imagePath,
     firebaseUid
 ) => {
     checkString(firstName, 'firstName');
@@ -50,6 +52,8 @@ export const createUser = async ( //need to add profile picture
         phoneNumber: phoneNumber,
         dateOfBirth: dateOfBirth,
         overThirteen: overThirteen,
+        imageUrl: imageUrl,
+        imagePath: imagePath,
         eventsMade: [],
         eventsAttending: []
     };
@@ -170,6 +174,14 @@ export const updateUser = async (firebaseUid, obj) => {
         checkValidEmail(obj.email, 'email');
         user.email = obj.email.trim();
     }
+    if(obj.imageUrl){
+        user.imageUrl = obj.imageUrl.trim();
+    }
+
+    if(obj.imagePath){
+        user.imagePath = obj.imagePath.trim();
+    }
+    
 
     await userCollection.findOneAndUpdate(
         { firebaseUid: firebaseUid },

@@ -15,9 +15,10 @@ function Home() {
   const [userInfo, setUserInfo] = useState(null);
   const [view, setView] = useState("myEvents");
   const [del, setDel] = useState(false);
+  const [delId, setDelId] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-   const [newComment, setNewComment] = useState({});
+  const [newComment, setNewComment] = useState({});
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -25,8 +26,7 @@ function Home() {
   const closeEditFormState = () => {
     setShowEditForm(false);
     setSelectedEvent(null);
-};
-
+  };
 
   useEffect(() => {
     const getEvents = async () => {
@@ -151,6 +151,7 @@ function Home() {
         `http://localhost:3000/events/${eventId}?userId=${user.uid}`
       );
       setMyEvents((prev) => prev.filter((event) => event._id !== eventId));
+      setDelId(null);
       setDel(false);
       alert("Event Deleted");
     } catch (error) {
@@ -308,66 +309,76 @@ function Home() {
                 <img alt="park" src="./imgs/park.jpg" />
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
+                <div className="myButtons">
+                  {view === "myEvents" && delId != event._id && (
+                    <div>
+                      <button
+                        className="edit-button"
+                        onClick={() => {
+                          setShowEditForm(!showEditForm);
+                          setSelectedEvent(event);
+                        }}
+                        style={{
+                          padding: "20px 40px",
+                          fontSize: "20px",
+                          border: "none",
+                          backgroundColor: "#c2e7ff",
+                          color: "black",
+                          cursor: "pointer",
+                          borderRadius: "30px",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        onMouseOver={(e) =>
+                          (e.target.style.backgroundColor = "#004080")
+                        }
+                        onMouseOut={(e) =>
+                          (e.target.style.backgroundColor = "#c2e7ff")
+                        }
+                      >
+                        Edit Event
+                      </button>
 
-                {view === "myEvents" && (
-                                    <div>
-                                    <button
-            className="edit-button"
-            onClick={() => {
-                setShowEditForm(!showEditForm);
-                setSelectedEvent(event);
-            }}
-            style={{
-                padding: '20px 40px',
-                fontSize: '20px',
-                border: 'none',
-                backgroundColor: '#c2e7ff', 
-                color: 'black',
-                cursor: 'pointer',
-                borderRadius: '30px',
-                transition: 'background-color 0.3s ease',
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = '#004080')}
-            onMouseOut={(e) => (e.target.style.backgroundColor = '#c2e7ff')}
-        >
-                                      Edit Event
-                                    </button>
+                      {showEditForm && (
+                        <EditEventModal
+                          isOpen={showEditForm}
+                          handleClose={closeEditFormState}
+                          eventData={selectedEvent}
+                        />
+                      )}
+                    </div>
+                  )}
 
-
-                                    {showEditForm && (
-                                      <EditEventModal
-                                      isOpen={showEditForm}
-                                      handleClose={closeEditFormState}
-                                      eventData={selectedEvent}
-                                      />
-                                    )}
-                                </div>
-                                )}
-
-                {view === "myEvents" && !del && (
-                  <button
-                    className="delete-button"
-                    onClick={() => setDel(true)}
-                  >
-                    Delete Event
-                  </button>
-                )}
-                {del && (
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteEvent(event._id)}
-                  >
-                    Confirm Delete
-                  </button>
-                )}
-                {del && (
-                  <button
-                    className="delete-button"
-                    onClick={() => setDel(false)}
-                  >
-                    Cancel
-                  </button>
-                )}
+                  {view === "myEvents" && delId != event._id && (
+                    <button
+                      className="delete-button"
+                      onClick={() => {
+                        setDel(true);
+                        setDelId(event._id);
+                      }}
+                    >
+                      Delete Event
+                    </button>
+                  )}
+                  {del && delId == event._id && (
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteEvent(event._id)}
+                    >
+                      Confirm Delete
+                    </button>
+                  )}
+                  {del && delId == event._id && (
+                    <button
+                      className="delete-button"
+                      onClick={() => {
+                        setDel(false);
+                        setDelId(null);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
                 <div className="tags">
                   {event.tags.map((tag, tagIndex) => (
                     <p key={tagIndex} className="tag">
