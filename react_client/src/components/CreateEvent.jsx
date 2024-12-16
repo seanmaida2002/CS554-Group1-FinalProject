@@ -143,7 +143,6 @@ function CreateEventModal(props){
                 });
                 alert ('Event Created!');
                 handleCloseCreateModal();
-                window.location.reload();
     }catch(e){
         setError(e.response?.data?.message || 'Could not create event')
     }

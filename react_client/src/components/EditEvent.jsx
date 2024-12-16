@@ -159,15 +159,15 @@ function EditEventModal(props){
                   location: location,
                   eventSize: eventSize,
                   tags: tags,
-                  eventOrganizer: firebaseUid,
                   description: description,
                   date: date ,
                   time: time ,
                   userId: firebaseUid
                 });
                 alert ('Event updated!');
+                console.log(response)
                 handleCloseEditModal();
-                window.location.reload();
+                // window.location.reload();
     }catch(e){
         setError(e.response?.data?.message || 'Could not edit event')
     }
