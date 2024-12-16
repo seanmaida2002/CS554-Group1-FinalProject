@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 import { checkDate } from '../helpers';
+import { UploadEventImage } from './EventImage';
 
 
 
@@ -50,7 +51,8 @@ function EditEventModal(props){
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [data, setData] = useState(props.eventData || {});
     const [error, setError] = useState('');
-
+    const [image, setImage] = useState(null);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         if (props.eventData) {
@@ -63,6 +65,21 @@ function EditEventModal(props){
         setShowEditModal(false);
         props.handleClose();
     };
+        const uploadFile = async (e) => {
+          const selectedFile = e.target.files[0];
+          if(selectedFile){
+              setFile(URL.createObjectURL(selectedFile));
+              setImage(selectedFile);
+          }
+        };
+        const handleUpload = async (event) => {
+          try{
+              const url = await UploadEventImage(image, event);
+              return url;
+          } catch(e){
+              console.log('Error uploading image:', e);
+          }
+        };
 
 
     const checkData = () => {
@@ -98,7 +115,6 @@ function EditEventModal(props){
           return false;
       }
       if (typeof Number.parseInt(eventSize) !== 'number' || eventSize <= 0) {
-        console.log(typeof eventSize)
           setError('Invalid Event Size');
           return false;
       }
@@ -169,16 +185,12 @@ function EditEventModal(props){
             // let description =  document.getElementById('description').value;
             // let id = data._id;
 
-            let eventName = data.eventName.trim()
-            let sport = data.sport.trim()
-            let location = data.location.trim()
-            let date = data.date.trim()
-            let time = data.time.trim()
-            let eventSize = data.eventSize
-            let tags = data.tags.trim()
-            let description =  data.description.trim()
-            let id = data._id;
 
+            let id = data._id;
+            const imageUrl = await handleUpload(data)
+            if(typeof data.tags == 'string'){
+              data.tags = [data.tags];
+            }
             try {
                 const response = await axios.patch(`http://localhost:3000/events/${id}`, {
                   eventName: data.eventName.trim(),
@@ -186,10 +198,11 @@ function EditEventModal(props){
                   location: data.location.trim(),
                   date: data.date.trim(),
                   time: data.time.trim(),
-                  eventSize: Number(data.eventSize), 
-                  tags: data.tags.split(',').map((tag) => tag.trim()), 
+                  eventSize: data.eventSize, 
+                  tags: data.tags, 
                   description: data.description.trim(),
-                  userId: firebaseUid
+                  userId: firebaseUid,
+                  imageUrl: imageUrl
                 });
                 alert ('Event updated!');
                 handleCloseEditModal();
@@ -399,6 +412,18 @@ function EditEventModal(props){
               onChange={(e) => setData({ ...data, description: e.target.value })}
               />
             </label>
+          </div>
+          <div>
+            <label>Upload Event Image:
+              <input type="file" accept="image/*" onChange={uploadFile} />
+            </label>
+            {file && <img src={file} alt="Preview" style={{ 
+            maxWidth: '300px', 
+            maxHeight: '200px', 
+            objectFit: 'cover', 
+            borderRadius: '10px', 
+            marginTop: '10px' 
+        }}  />}
           </div>
           <button type="submit"
                     style={buttonStyles}
