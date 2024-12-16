@@ -119,7 +119,7 @@ function RegisterSocialSignOn() {
             <form onSubmit={handleSignUp}>
                 <div className='register-profile-picture-wrapper'>
                     <label>Profile Picture:</label>
-                    <input type='file' accept='image/*' multiple={false} onChange={uploadFile} />
+                    <input type='file' accept='image/jpeg, image/png, image/jpg' multiple={false} onChange={uploadFile} />
                     <br />
                     <br />
                     <div className='register-profile-picture-container'>
