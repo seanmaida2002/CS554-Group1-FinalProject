@@ -23,7 +23,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
         sport: sport, 
         location: location, 
         eventSize: eventSize,
-        imageUrl, imageUrl,
+        imageUrl: "No Image",
         eventOrganizer: eventOrganizer, 
         date: date,
         time: time,
