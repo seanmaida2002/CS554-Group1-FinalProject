@@ -57,10 +57,12 @@ router
                 tags,
                 eventOrganizer, 
                 description, 
-                date, time
+                date, 
+                time,
+                imageUrl
             } = newEventData;
 
-            const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);
+            const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time, imageUrl);
             await client.json.set(`event:{${eventReturned._id.toString()}}`, '$', eventReturned, {EX: 3600});
             await client.del('getAllEvents');
             return res.status(200).json(eventReturned);

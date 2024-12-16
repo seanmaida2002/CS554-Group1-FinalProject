@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { users } from "./config/mongoCollections.js";
+import xss from "xss";
 
 export function checkString(param, name) {
     if (param === undefined || typeof param !== "string") {
@@ -216,6 +217,7 @@ export function checkValidTags(tags, variableName){
 
     tags = tags.map((x) => {
         x = checkString(x, `Error: an item of ${variableName || "provided variable"}`);
+        x = xss(x);
         return x;
     });
 
