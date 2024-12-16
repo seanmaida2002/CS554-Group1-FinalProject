@@ -3,7 +3,7 @@ import xss from "xss";
 import { checkString, checkID, checkValidEventName, checkValidEventDate, checkValidSport, checkValidEventSize, checkValidTags, checkValidLocation, checkValidUser, checkValidEventTime, checkValidUsername, checkValidComment } from "../helpers.js";
 import { ObjectId } from "mongodb";
 
-export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time /*, image */) => {
+export const createEvent = async (eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time , imageUrl) => {
     // Error Checking
     eventName = checkValidEventName(eventName, 'Event Name');
     eventName = xss(eventName);
@@ -23,7 +23,7 @@ export const createEvent = async (eventName, sport, location, eventSize, eventOr
         sport: sport, 
         location: location, 
         eventSize: eventSize,
-        // image: image, 
+        imageUrl, imageUrl,
         eventOrganizer: eventOrganizer, 
         date: date,
         time: time,
