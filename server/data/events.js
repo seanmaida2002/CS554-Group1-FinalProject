@@ -53,8 +53,21 @@ export const getAllEvents = async() => {
     let evenstArray = await eventsCollection.find().project().toArray();
     if(!evenstArray) throw "Error: could not get all the products.";
     if(evenstArray.length === 0) return [];
-    
-    return evenstArray;
+    let eventsReturned = evenstArray.filter((event) => {
+        let date = event.date;
+        date = date.split('/');
+        const givenDate = new Date(`${date[2]}-${date[0]}-${date[1]}`);
+        // Below checks to see whether or not the date given takes place after todays date
+        let currentDate = new Date();
+        if(currentDate.getFullYear() < Number(date[2]) || 
+            ((currentDate.getMonth()+1) < Number(date[0]) && currentDate.getFullYear() === Number(date[2])) ||
+            (currentDate.getDate() < Number(date[1]) && currentDate.getFullYear() === Number(date[2]) && (currentDate.getMonth()+1) === Number(date[0]))
+        ){
+            return true;
+        }
+        return false;
+    });
+    return eventsReturned;
 }
 
 export const getEventById = async (id) => {
