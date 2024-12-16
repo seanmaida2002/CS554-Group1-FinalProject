@@ -63,9 +63,9 @@ export const getAllEvents = async() => {
             ((currentDate.getMonth()+1) > Number(date[0]) && currentDate.getFullYear() === Number(date[2])) ||
             (currentDate.getDate() > Number(date[1]) && currentDate.getFullYear() === Number(date[2]) && (currentDate.getMonth()+1) === Number(date[0]))
         ){
-            return true;
+            return false;
         }
-        return false;
+        return true;
     });
     return eventsReturned;
 }
