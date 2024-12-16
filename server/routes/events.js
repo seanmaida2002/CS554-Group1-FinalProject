@@ -57,7 +57,8 @@ router
                 tags,
                 eventOrganizer, 
                 description, 
-                date, time
+                date, 
+                time,
             } = newEventData;
 
             const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { users } from "./config/mongoCollections.js";
+import xss from "xss";
 
 export function checkString(param, name) {
     if (param === undefined || typeof param !== "string") {
@@ -205,7 +206,7 @@ export async function checkValidUserAndGetUsername(user){
 
 export function checkValidComment(comment){
     comment = checkString(comment, 'comment');
-
+    if(comment.length > 100) throw "Error: Comment more than 100 characters";
     // Any other validations
     return comment;
 }
@@ -216,18 +217,20 @@ export function checkValidTags(tags, variableName){
 
     tags = tags.map((x) => {
         x = checkString(x, `Error: an item of ${variableName || "provided variable"}`);
+        x = xss(x);
         return x;
     });
 
     return tags;
 }
-
+// Valid Format: 111 Main Street, Apt 6, Sport Town, NJ 12345
+// Apt 6 is optional, could also be Unit 4
 export function checkValidLocation(location, variableName){
     if(location === undefined) throw `Error: ${variableName || "provided variable"} is undefined.`;
     if(typeof location !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
     location = location.trim();
     if(location.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
-
+    if(!/^\d+\s[A-Za-z\s]+(?:,\s(?:Unit\s\d+|Apt\s[0-9A-Za-z]+))?,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}$/.test(location)) throw "Error Location not in valid format."
     // How else are we validating location, is it the name of the venue or the address?
     return location;
 }

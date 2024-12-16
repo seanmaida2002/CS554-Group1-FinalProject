@@ -235,21 +235,17 @@
 
     align-items: center;
 
-    padding: 0.5rem 1.5rem;
-    font-size: 15pt;
-    font-weight: bold;
+    font-size: 14pt;
     color: gainsboro;
     background-color: transparent;
     border: 2px solid transparent;
     border-radius: 5px;
     text-decoration: none;
     cursor: pointer;
-    transition: 0.2s ease-in-out all;
 }
 
 .button-create:hover {
-    border-bottom-color: 2px solid #77c9d4;
-    border-color: #77c9d4;
+    border-bottom: 2px solid #77c9d4;
 }
 
 .button-create:active {
