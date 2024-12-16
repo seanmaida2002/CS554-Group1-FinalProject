@@ -112,7 +112,6 @@ function CreateEventModal(props){
           return false;
       }
       if (typeof Number.parseInt(eventSize) !== 'number' || eventSize <= 0) {
-        console.log(typeof eventSize)
           setError('Invalid Event Size');
           return false;
       }
@@ -170,13 +169,20 @@ function CreateEventModal(props){
 
         const createResponse = await axios.post('http://localhost:3000/events/', createEventData);
         const id = createResponse.data._id;
-        console.log(id)
 
         if (image) {
             const imageUrl = await handleUpload(createResponse); 
             const updateEventData = {
-              ...createResponse.data,
-                imageUrl,
+              eventName: createResponse.data.eventName.trim(),
+              sport: createResponse.data.sport.trim(),
+              location: createResponse.data.location.trim(),
+              date: createResponse.data.date.trim(),
+              time: createResponse.data.time.trim(),
+              eventSize: createResponse.data.eventSize, 
+              tags: createResponse.data.tags, 
+              description: createResponse.data.description.trim(),
+              userId: firebaseUid,
+              imageUrl: imageUrl
             };
             await axios.patch(`http://localhost:3000/events/${id}`, updateEventData);
         }

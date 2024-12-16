@@ -192,7 +192,6 @@ function EditEventModal(props){
                   userId: firebaseUid
                 });
                 alert ('Event updated!');
-                console.log(response)
                 handleCloseEditModal();
                 window.location.reload();
     }catch(e){
