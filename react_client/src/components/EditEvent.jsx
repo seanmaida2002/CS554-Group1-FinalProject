@@ -167,7 +167,7 @@ function EditEventModal(props){
                 alert ('Event updated!');
                 console.log(response)
                 handleCloseEditModal();
-                // window.location.reload();
+                window.location.reload();
     }catch(e){
         setError(e.response?.data?.message || 'Could not edit event')
     }
