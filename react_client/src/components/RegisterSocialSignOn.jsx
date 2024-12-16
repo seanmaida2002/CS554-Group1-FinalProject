@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { checkDate, checkPhoneNumber, checkValidAge, checkValidUsername } from '../helpers';
+import { UploadProfileImage } from './UploadImage';
 
 function RegisterSocialSignOn() {
     const { currentUser } = useContext(AuthContext);
@@ -11,13 +12,32 @@ function RegisterSocialSignOn() {
     let [firstName, lastName] = currentUser.displayName.split(" ");
     let email = currentUser.email.trim();
     const navigate = useNavigate();
+    const [file, setFile] = useState();
+    const [image, setImage] = useState('');
 
-    const checkAlreadyRegistered = async(e) => {
+    const checkAlreadyRegistered = async (e) => {
         const user = await axios.get(`http://localhost:3000/user/${firebaseUid}`);
-        if(user.data.username !== ''){
+        if (user.data.username !== '') {
             return navigate('/home');
         }
     }
+
+    const uploadFile = async (e) => {
+        const selectedFile = e.target.files[0];
+        if(selectedFile){
+            setFile(URL.createObjectURL(selectedFile));
+            setImage(selectedFile);
+        }
+    };
+
+    const handleUpload = async () => {
+        try{
+            const url = await UploadProfileImage(image, currentUser);
+            return url;
+        } catch(e){
+            console.log('Error uploading image:', e);
+        }
+    };
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -57,9 +77,8 @@ function RegisterSocialSignOn() {
                 return;
             }
 
-            // const displayName = firstName.value + " " + lastName.value;
-            // await doCreateUserWithEmailAndPassword(email.value, passwordOne.value, displayName);
-
+            const imageUrl = await handleUpload();
+            const imagePath = `images/userProfileImage/${firebaseUid}/${image.name}`
 
             const user = {
                 firstName: firstName,
@@ -68,6 +87,8 @@ function RegisterSocialSignOn() {
                 email: email,
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
+                imageUrl: imageUrl,
+                imagePath: imagePath,
                 firebaseUid: firebaseUid
             };
             const createUser = await axios.patch(`http://localhost:3000/user/${firebaseUid}`, user, {
@@ -88,7 +109,7 @@ function RegisterSocialSignOn() {
     };
 
     checkAlreadyRegistered();
-    
+
 
 
     return (
@@ -96,6 +117,16 @@ function RegisterSocialSignOn() {
             <h1>Register</h1>
             {error && <h4 className='error'>{error}</h4>}
             <form onSubmit={handleSignUp}>
+                <div className='register-profile-picture-wrapper'>
+                    <label>Profile Picture:</label>
+                    <input type='file' accept='image/jpeg, image/png, image/jpg' multiple={false} onChange={uploadFile} />
+                    <br />
+                    <br />
+                    <div className='register-profile-picture-container'>
+                        <img className='register-profile-picture' src={file} alt='Profile Picture' />
+                    </div>
+                </div>
+                <br />
                 <div className='register-form'>
                     <label>
                         First Name: {firstName}

@@ -3,6 +3,7 @@ import "../App.css";
 import "./Home.css";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
+import EditEventModal from "./EditEvent";
 
 function Home() {
   const [events, setEvents] = useState(null);
@@ -12,11 +13,20 @@ function Home() {
   const [attendingEvents, setAttendingEvents] = useState([]);
   const [filteredSport, setFilteredSport] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const [view, setView] = useState("otherEvents");
+  const [view, setView] = useState("myEvents");
   const [del, setDel] = useState(false);
+  const [delId, setDelId] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [newComment, setNewComment] = useState({});
 
   const auth = getAuth();
   const user = auth.currentUser;
+
+  const closeEditFormState = () => {
+    setShowEditForm(false);
+    setSelectedEvent(null);
+  };
 
   useEffect(() => {
     const getEvents = async () => {
@@ -104,7 +114,7 @@ function Home() {
         `http://localhost:3000/events/${eventId}/signUpUser`,
         {
           userId: user.uid,
-          eventOrganizer: eventOrganizer, 
+          eventOrganizer: eventOrganizer,
         }
       );
 
@@ -123,11 +133,13 @@ function Home() {
         `http://localhost:3000/events/${eventId}/unsignUpUser`,
         {
           userId: user.uid,
-          eventOrganizer: eventOrganizer, 
+          eventOrganizer: eventOrganizer,
         }
       );
 
-      setAttendingEvents((prev) => prev.filter((event) => event._id !== eventId));
+      setAttendingEvents((prev) =>
+        prev.filter((event) => event._id !== eventId)
+      );
       alert("You are no longer attending the event!");
     } catch (error) {
       console.error(`Error signing up for event: ${error.message}`);
@@ -135,16 +147,71 @@ function Home() {
   };
   const handleDeleteEvent = async (eventId) => {
     try {
-      await axios.delete(`http://localhost:3000/events/${eventId}?userId=${user.uid}`);
+      await axios.delete(
+        `http://localhost:3000/events/${eventId}?userId=${user.uid}`
+      );
       setMyEvents((prev) => prev.filter((event) => event._id !== eventId));
+      setDelId(null);
       setDel(false);
       alert("Event Deleted");
     } catch (error) {
       console.error(`Error deleting event: ${error.message}`);
     }
   };
-  
-  
+
+  const handleCommentChange = (eventId, value) => {
+    setNewComment((prev) => ({ ...prev, [eventId]: value }));
+  };
+
+  const handleDeleteComment = async (eventId, commentId) => {
+    if (!user) return;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/events/${eventId}/comments/${commentId}?userId=${user.uid}`
+      );
+
+      // Update the event comments locally
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event._id === eventId
+            ? { ...event, comments: response.data.comments }
+            : event
+        )
+      );
+
+      alert("Comment deleted successfully!");
+    } catch (error) {
+      console.error(`Error deleting comment: ${error.message}`);
+    }
+  };
+
+  const handleAddComment = async (eventId, username) => {
+    if (!user) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/events/${eventId}/comments`,
+        {
+          userId: user.uid,
+          username: username,
+          comment: newComment[eventId],
+        }
+      );
+
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event._id === eventId
+            ? { ...event, comments: response.data.comments }
+            : event
+        )
+      );
+
+      setNewComment((prev) => ({ ...prev, [eventId]: "" }));
+    } catch (error) {
+      console.error(`Error adding comment: ${error.message}`);
+    }
+  };
 
   if (!user) {
     return (
@@ -219,12 +286,14 @@ function Home() {
                       const isSignedUp = attendingEvents.some(
                         (e) => e._id === event._id
                       );
-                      const myEvent = (event.eventOrganizer === user.uid);
+                      const myEvent = event.eventOrganizer === user.uid;
                       if (isSignedUp && !myEvent) {
                         handleUnsignUp(event._id, event.eventOrganizer);
-                        event.usersSignedUp = event.usersSignedUp.filter((id) => id != user.uid);
+                        event.usersSignedUp = event.usersSignedUp.filter(
+                          (id) => id != user.uid
+                        );
                         otherEvents.push(event);
-                      } else if(!myEvent){
+                      } else if (!myEvent) {
                         handleSignUp(event._id, event.eventOrganizer);
                         event.usersSignedUp.push(user.uid);
                         attendingEvents.push(event);
@@ -240,30 +309,76 @@ function Home() {
                 <img alt="park" src="./imgs/park.jpg" />
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
-                {view === "myEvents" && !del && (
+                <div className="myButtons">
+                  {view === "myEvents" && delId != event._id && (
+                    <div>
+                      <button
+                        className="edit-button"
+                        onClick={() => {
+                          setShowEditForm(!showEditForm);
+                          setSelectedEvent(event);
+                        }}
+                        style={{
+                          padding: "20px 40px",
+                          fontSize: "20px",
+                          border: "none",
+                          backgroundColor: "#c2e7ff",
+                          color: "black",
+                          cursor: "pointer",
+                          borderRadius: "30px",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        onMouseOver={(e) =>
+                          (e.target.style.backgroundColor = "#004080")
+                        }
+                        onMouseOut={(e) =>
+                          (e.target.style.backgroundColor = "#c2e7ff")
+                        }
+                      >
+                        Edit Event
+                      </button>
+
+                      {showEditForm && (
+                        <EditEventModal
+                          isOpen={showEditForm}
+                          handleClose={closeEditFormState}
+                          eventData={selectedEvent}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {view === "myEvents" && delId != event._id && (
                     <button
                       className="delete-button"
-                      onClick={() => setDel(true)}
+                      onClick={() => {
+                        setDel(true);
+                        setDelId(event._id);
+                      }}
                     >
                       Delete Event
                     </button>
-                )}
-                {del && (
+                  )}
+                  {del && delId == event._id && (
                     <button
                       className="delete-button"
                       onClick={() => handleDeleteEvent(event._id)}
                     >
                       Confirm Delete
                     </button>
-                )}
-                {del && (
+                  )}
+                  {del && delId == event._id && (
                     <button
                       className="delete-button"
-                      onClick={() => setDel(false)}
+                      onClick={() => {
+                        setDel(false);
+                        setDelId(null);
+                      }}
                     >
                       Cancel
                     </button>
-                )}
+                  )}
+                </div>
                 <div className="tags">
                   {event.tags.map((tag, tagIndex) => (
                     <p key={tagIndex} className="tag">
@@ -272,6 +387,36 @@ function Home() {
                   ))}
                 </div>
               </div>
+            </div>
+            <div className="comments">
+              <h3>Comments:</h3>
+              {event.comments.map((com, index) => (
+                <div key={index} className="comment-item">
+                  <p>
+                    <strong>{com.username}</strong>: {com.comment}
+                  </p>
+                  {com.userId === user.uid && (
+                    <button
+                      className="delete-comment-button"
+                      onClick={() => handleDeleteComment(event._id, com._id)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+              <input
+                type="text"
+                className="add"
+                placeholder="Add a comment"
+                value={newComment[event._id] || ""}
+                onChange={(e) => handleCommentChange(event._id, e.target.value)}
+              />
+              <button
+                onClick={() => handleAddComment(event._id, userInfo?.username)}
+              >
+                Submit
+              </button>
             </div>
           </div>
         ))}
