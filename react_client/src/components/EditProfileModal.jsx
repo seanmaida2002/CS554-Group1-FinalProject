@@ -191,7 +191,7 @@ function EditProfileModal(props) {
                 >
                     <div className='edit-profile-picture-wrapper'>
                         <label>Change Profile Picture:</label>
-                        <input type='file' accept='image/*' multiple={false} onChange={uploadFile} />
+                        <input type='file' accept='image/jpeg, image/png, image/jpg' multiple={false} onChange={uploadFile} />
                         <br />
                         <br />
                         <div className='edit-profile-picture-container'>
