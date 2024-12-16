@@ -55,7 +55,7 @@ function Profile() {
     return (
         <div className="card">
             <div className="profile-container">
-                <div id="profile-personal-image"><img alt="profile-icon" src='./imgs/profile-icon-black.png' /></div>
+                <div id="profile-personal-image"><img alt="profile-icon" src={userProfile.imageUrl ? userProfile.imageUrl : '../imgs/profile-icon-black.png'} /></div>
                 <div id="profile-fullName">{`${userProfile.firstName} ${userProfile.lastName}`}</div>
                 <div id='profile-username'>@{`${userProfile.username}`}</div>
                 <br />
