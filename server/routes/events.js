@@ -151,6 +151,7 @@ router
             if(updateData.date) updateData.date = checkValidEventDate(updateData.date, 'Event Date');
             if(updateData.time) updateData.time = checkValidEventTime(updateData.time, 'Event Time');
         }catch(e){
+            console.log(e);
             return res.status(400).json({error: e});
         }
 

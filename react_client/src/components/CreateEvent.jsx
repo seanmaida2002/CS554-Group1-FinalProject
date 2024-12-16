@@ -356,7 +356,7 @@ function CreateEventModal(props){
           </div>
           <div>
             <label>
-              Location:
+              Location "address, town, state(abbreviated) zipcode":
               <input
               type="text"
               id="location"
