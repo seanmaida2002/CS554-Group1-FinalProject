@@ -65,72 +65,99 @@ function EditEventModal(props){
     };
 
 
-    const checkData = () =>{
-        let { eventName, sport, location, date, eventSize, tags, description } = data
-        if(typeof eventName !== 'string' || eventName.trim() == '' ){
-            setError('Invalid Event Name')
+    const checkData = () => {
+      let { eventName, sport, location, date, eventSize, tags, description } = data;
+      
+      if (typeof eventName !== 'string' || eventName.trim() === '') {
+          setError('Invalid Event Name');
+          return false;
+      }
+      if (eventName.trim().length > 50) {
+          setError('Event name must be at most 50 characters');
+          return false;
+      }
+      if (typeof sport !== 'string' || sport.trim() === '') {
+          setError('Invalid Sport');
+          return false;
+      }
+      if (sport.trim().length > 50) {
+          setError('Sport must be at most 50 characters');
+          return false;
+      }
+      if (typeof location !== 'string' || location.trim() === '') {
+          setError('Invalid Location');
+          return false;
+      }
+      if (location.trim().length > 100) {
+          setError('Location must be at most 100 characters');
+          return false;
+      }
+      let dateCheck = checkDate(date, 'Date');
+      if (!date || dateCheck !== date) {
+          setError(dateCheck || 'Invalid Date');
+          return false;
+      }
+      if (typeof Number.parseInt(eventSize) !== 'number' || eventSize <= 0) {
+        console.log(typeof eventSize)
+          setError('Invalid Event Size');
+          return false;
+      }
+      if (tags) {
+        let tagArray;
+        if (typeof tags === 'string') {
+            tagArray = tags.split(',').map((tag) => tag.trim());
+        } else if (Array.isArray(tags)) {
+            tagArray = tags;
+        } else {
+            setError('Tags must be a string or an array of strings');
             return false;
         }
-        if(typeof sport !== 'string' || sport.trim() == '' ){
-            setError('Invalid Sport')
-            return false; 
-        }
-        if(typeof location !== 'string' || location.trim() == '' ){
-            setError('Invalid Location')
-            return false; 
-        }
-        let dateCheck = checkDate(date,'Date');
-        if(!date || dateCheck !== date ){
-            setError("invalid date")
+
+        if (tagArray.length > 5) {
+            setError('You can only add up to 5 tags for each event');
             return false;
         }
-        if(typeof date !== 'string')
-        if(typeof eventSize !== 'number' || eventSize == 0 ){
-            setError('Invalid Event Size')
-            return false;
-        }
-        if (tags) {
-            if (typeof tags === 'string') {
-              tags = [tags.trim()];
-            } else if (Array.isArray(tags)) {
-              tags = tags.map((tag) => tag.trim());
-            } else {
-              setError("Tags must be a string or an array of strings");
-              return false;
-            }
-         
-            for (let i = 0; i < tags.length; i++) {
-              if (!tags[i]) {
-                setError("Each tag must be a non-empty string");
+
+        for (let tag of tagArray) {
+            if (typeof tag !== 'string' || !tag.trim()) {
+                setError('Each tag must be a non-empty string');
                 return false;
-              }
             }
-          }
-        if(typeof description !== 'string' || description.trim() == '' ){
-            setError('Invalid Description')
-            return false;
+            if (tag.length > 20) {
+                setError('Each tag can only be up to 20 characters');
+                return false;
+            }
         }
-        setError('');
-        return true;
+        data.tags = tagArray.join(', ');
+      }
+
+      if (typeof description !== 'string' || description.trim() === '') {
+          setError('Invalid Description');
+          return false;
+      }
+      if (description.trim().length > 250) {
+          setError('Description must be at most 250 characters');
+          return false;
+      }
+      
+      setError('');
+      return true;
+  };
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!checkData()) {
+        return; 
     }
 
-
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        let errors = checkData();
-        if(errors == false){
-            setError(errors);
-            return;
-        }
-            const auth = getAuth();
-            const firebaseUid = auth.currentUser?.uid;
-            if(!firebaseUid){
-                setError('Error with firebase user id')
-                return;
-            }
-
+    const auth = getAuth();
+    const firebaseUid = auth.currentUser?.uid;
+    if (!firebaseUid) {
+        setError('Error with Firebase user ID');
+        return;
+    }
 
             // let eventName = document.getElementById('eventName').value;
             // let sport = document.getElementById('sport').value;
@@ -142,26 +169,26 @@ function EditEventModal(props){
             // let description =  document.getElementById('description').value;
             // let id = data._id;
 
-            let eventName = data.eventName
-            let sport = data.sport
-            let location = data.location
-            let date = data.date
-            let time = data.time
+            let eventName = data.eventName.trim()
+            let sport = data.sport.trim()
+            let location = data.location.trim()
+            let date = data.date.trim()
+            let time = data.time.trim()
             let eventSize = data.eventSize
-            let tags = data.tags
-            let description =  data.description
+            let tags = data.tags.trim()
+            let description =  data.description.trim()
             let id = data._id;
 
             try {
                 const response = await axios.patch(`http://localhost:3000/events/${id}`, {
-                  eventName: eventName,
-                  sport: sport,
-                  location: location,
-                  eventSize: eventSize,
-                  tags: tags,
-                  description: description,
-                  date: date ,
-                  time: time ,
+                  eventName: data.eventName.trim(),
+                  sport: data.sport.trim(),
+                  location: data.location.trim(),
+                  date: data.date.trim(),
+                  time: data.time.trim(),
+                  eventSize: Number(data.eventSize), 
+                  tags: data.tags.split(',').map((tag) => tag.trim()), 
+                  description: data.description.trim(),
                   userId: firebaseUid
                 });
                 alert ('Event updated!');
@@ -169,6 +196,7 @@ function EditEventModal(props){
                 handleCloseEditModal();
                 window.location.reload();
     }catch(e){
+      console.log(data)
         setError(e.response?.data?.message || 'Could not edit event')
     }
 };

@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 import { checkDate } from '../helpers';
+import { UploadProfileImage } from './UploadImage';
 
 
 ReactModal.setAppElement('#root');
@@ -44,6 +45,8 @@ const buttonHoverStyles = {
 }
 function CreateEventModal(props){
     const [showCreateModal, setShowCreateModal] = useState(props.isOpen);
+    const [file, setFile] = useState(null);
+    const [image, setImage] = useState(null);
     const [data, setData] = useState({
         eventName:'',
         sport:'',
@@ -59,6 +62,23 @@ function CreateEventModal(props){
     const handleCloseCreateModal = () => {
         setShowCreateModal(false);
         props.handleClose();
+    };
+    const uploadFile = async (e) => {
+      const selectedFile = e.target.files[0];
+      if(selectedFile){
+          setFile(URL.createObjectURL(selectedFile));
+          setImage(selectedFile);
+      }
+    };
+    const handleUpload = async () => {
+      try{
+          const auth = getAuth();
+          const currentUser = auth.currentUser
+          const url = await UploadProfileImage(image, currentUser);
+          return url;
+      } catch(e){
+          console.log('Error uploading image:', e);
+      }
     };
 
     const checkData = () => {
@@ -134,7 +154,6 @@ function CreateEventModal(props){
       if (!checkData()) {
           return; 
       }
-  
       const auth = getAuth();
       const firebaseUid = auth.currentUser?.uid;
       if (!firebaseUid) {
@@ -143,11 +162,18 @@ function CreateEventModal(props){
       }
   
       try {
-          const response = await axios.post('http://localhost:3000/events/', {
-              ...data,
-              eventSize: Number(data.eventSize),
-              tags: data.tags.split(',').map((tag) => tag.trim()), 
-              eventOrganizer: firebaseUid
+        let imageUrl = '';
+        if (image) {
+            imageUrl = await handleUpload();
+        }
+        let dataToCreate = {
+          eventSize: Number(data.eventSize),
+          tags: data.tags.split(',').map((tag) => tag.trim()), 
+          eventOrganizer: firebaseUid,
+          imageUrl
+        }
+          const response = await axios.post('http://localhost:3000/events/', dataToCreate, {
+            headers:{'Content-Type' : 'application/json'},
           });
           alert('Event Created!');
           handleCloseCreateModal();
@@ -357,6 +383,12 @@ function CreateEventModal(props){
               onChange={(e) => setData({ ...data, description: e.target.value })}
               />
             </label>
+          </div>
+          <div>
+            <label>Upload Event Image:
+              <input type="file" accept="image/*" onChange={uploadFile} />
+            </label>
+            {file && <img src={file} alt="Preview" style={{ maxWidth: '100%', marginTop: '10px' }} />}
           </div>
           <button type="submit"
           style={buttonStyles}
