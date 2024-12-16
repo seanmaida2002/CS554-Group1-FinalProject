@@ -306,7 +306,7 @@ function Home() {
                 <h4>
                   {event.time} on {event.date}
                 </h4>
-                <img alt="park" src="./imgs/park.jpg" />
+                <img alt="No Image" src= {event.imageUrl}/>
                 <p>{event.description}</p>
                 <p>Location: {event.location}</p>
                 <div className="myButtons">
