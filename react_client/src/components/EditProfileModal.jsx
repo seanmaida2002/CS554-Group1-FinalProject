@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import ReactModal from 'react-modal';
 import axios from 'axios';
-import { getAuth, updateEmail } from 'firebase/auth';
-import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
+import { getAuth } from 'firebase/auth';
+import { checkDate, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 import { UploadProfileImage, DeleteProfileImage } from './UploadImage';
 
 ReactModal.setAppElement('#root');
@@ -72,7 +72,6 @@ function EditProfileModal(props) {
     let username;
     let dateOfBirth;
     let phoneNumber;
-    let email;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -97,11 +96,6 @@ function EditProfileModal(props) {
             let phoneNumberError = checkPhoneNumber(phoneNumber.value.trim(), "Phone Number");
             if (phoneNumberError !== phoneNumber.value.trim()) {
                 setError(phoneNumberError);
-                return;
-            }
-            let emailError = checkValidEmail(email.value.trim(), "Email");
-            if (emailError !== email.value.trim()) {
-                setError(emailError);
                 return;
             }
             if (username.value.trim() !== profile.username) {
@@ -138,7 +132,6 @@ function EditProfileModal(props) {
                 firstName: firstName.value,
                 lastName: lastName.value,
                 username: username.value,
-                email: email.value,
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
                 imageUrl: newImageUrl,
@@ -252,14 +245,14 @@ function EditProfileModal(props) {
                             />
                         </label>
                     </div>
-                    <br />
-                    <div className='editProfile-form'>
+                    {/* <br /> */}
+                    {/* <div className='editProfile-form'>
                         {auth.currentUser.providerData[0].providerId === 'password' ?
                             (
                                 <label>
                                     Email:
                                     <br />
-                                    <input
+                                    <input style={{ display: "none" }}
                                         ref={(node) => {
                                             email = node;
                                         }}
@@ -280,7 +273,7 @@ function EditProfileModal(props) {
                                 </label>
                             )
                         }
-                    </div>
+                    </div> */}
                     <br />
                     <div className='editProfile-form'>
                         <label>
