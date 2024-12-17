@@ -10,7 +10,7 @@ import {
     checkPhoneNumber, checkDateOfBirth
 } from "../helpers.js";
 
-export const createUser = async ( //need to add profile picture
+export const createUser = async (
     firstName,
     lastName,
     username,
@@ -161,7 +161,7 @@ export const updateUser = async (firebaseUid, obj) => {
         checkValidUsername(obj.username.trim());
         user.username = obj.username.trim();
     }
-    
+
     if (obj.dateOfBirth) {
         checkDateOfBirth(obj.dateOfBirth, 'dateOfBirth');
         user.dateOfBirth = obj.dateOfBirth.trim();
@@ -174,21 +174,20 @@ export const updateUser = async (firebaseUid, obj) => {
         checkValidEmail(obj.email, 'email');
         user.email = obj.email.trim();
     }
-    if(obj.imageUrl){
+    if (obj.imageUrl) {
         user.imageUrl = obj.imageUrl.trim();
     }
 
-    if(obj.imagePath){
+    if (obj.imagePath) {
         user.imagePath = obj.imagePath.trim();
     }
     
-
     await userCollection.findOneAndUpdate(
         { firebaseUid: firebaseUid },
         { $set: user },
         { returnDocument: "after" }
     );
-   
+
     if (user === null) {
         throw `Error: no user found with that id`;
     }
