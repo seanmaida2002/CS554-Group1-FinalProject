@@ -23,8 +23,15 @@ router.route("/:id").get(async (req, res) => {
         const firebaseUid = req.params.id;
         const user = await getUser(firebaseUid);
         if (user) {
-            await client.set(`user:${firebaseUid}`, JSON.stringify(user), { EX: 3600 });
-            return res.status(200).json(user);
+            let exists = await client.exists(`user:${user._id}`);
+            if(exists){
+                const cachedUser = await client.get(`user:${user._id}`);
+                return res.status(200).json(JSON.parse(cachedUser));
+            } else {
+                await client.set(`user:${user._id}`, JSON.stringify(user), {EX: 3600});
+                return res.status(200).json(user);
+            }
+            
         }
         else {
             return res.status(500).json({ error: "Internal Server Error" });
