@@ -18,7 +18,7 @@ const SocialSignIn = () => {
             });
 
             if (emailCheck.data.message === "Email available") {
-                await registerNewUser(auth);
+                const registerUser = await registerNewUser(auth);
                 const user = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
                 navigate('/register/socialSignOn');
             }
