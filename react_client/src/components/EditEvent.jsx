@@ -215,7 +215,7 @@ const uploadFile = async (e) => {
       data.tags = [data.tags]
     }
     try {
-      const response = await axios.patch(`http://3.22.68.13:3000/events/${data._id}`, {
+      const response = await axios.patch(`http://3.139.82.74:3000/events/${data._id}`, {
         eventName: data.eventName.trim(),
         sport: data.sport.trim(),
         location: data.location.trim(),

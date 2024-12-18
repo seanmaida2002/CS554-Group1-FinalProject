@@ -16,7 +16,7 @@ function RegisterSocialSignOn() {
     const [image, setImage] = useState('');
 
     const checkAlreadyRegistered = async (e) => {
-        const user = await axios.get(`http://3.22.68.13:3000/user/${firebaseUid}`);
+        const user = await axios.get(`http://3.139.82.74:3000/user/${firebaseUid}`);
         if (user.data.username !== '') {
             return navigate('/home');
         }
@@ -49,7 +49,7 @@ function RegisterSocialSignOn() {
         try {
 
 
-            const usernameCheck = await axios.post('http://3.22.68.13:3000/user/check-username', { username: username.value }, {
+            const usernameCheck = await axios.post('http://3.139.82.74:3000/user/check-username', { username: username.value }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -91,7 +91,7 @@ function RegisterSocialSignOn() {
                 imagePath: imagePath,
                 firebaseUid: firebaseUid
             };
-            const createUser = await axios.patch(`http://3.22.68.13:3000/user/${firebaseUid}`, user, {
+            const createUser = await axios.patch(`http://3.139.82.74:3000/user/${firebaseUid}`, user, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

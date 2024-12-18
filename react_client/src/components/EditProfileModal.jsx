@@ -104,7 +104,7 @@ function EditProfileModal(props) {
                     setError(usernameError);
                     return;
                 }
-                const usernameCheck = await axios.post('http://3.22.68.13:3000/user/check-username', { username: username.value }, {
+                const usernameCheck = await axios.post('http://3.139.82.74:3000/user/check-username', { username: username.value }, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -120,7 +120,7 @@ function EditProfileModal(props) {
             let newImageUrl = profile.imageUrl;
             if (image) {
                 if (profile.imageUrl) {
-                    const user = await axios.get(`http://3.22.68.13:3000/user/${auth.currentUser.uid}`)
+                    const user = await axios.get(`http://3.139.82.74:3000/user/${auth.currentUser.uid}`)
                     const imagePath = user.data.imagePath;
                     handleDeleteImage(imagePath);
                 }
@@ -141,7 +141,7 @@ function EditProfileModal(props) {
             setError('');
 
             auth.currentUser.displayName = firstName.value + " " + lastName.value;
-            const update = await axios.patch(`http://3.22.68.13:3000/user/${firebaseUid}`, updateProfile);
+            const update = await axios.patch(`http://3.139.82.74:3000/user/${firebaseUid}`, updateProfile);
 
             alert("Profile Updated Successfully");
             props.onProfileUpdate(update.data);
