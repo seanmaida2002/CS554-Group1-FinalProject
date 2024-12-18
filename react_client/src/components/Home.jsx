@@ -63,7 +63,6 @@ function Home() {
       const myEventsTemp = [];
       const otherEventsTemp = [];
       const attendingEventsTemp = [];
-
       for (const event of events) {
         if (event.eventOrganizer === user.uid) {
           myEventsTemp.push(event);

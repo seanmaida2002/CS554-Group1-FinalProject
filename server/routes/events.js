@@ -199,8 +199,7 @@ router
 
         try{
             const updatedUser = await signUpUser(eventId, userId, eventOrganizer);
-            await client.del(`event:{${eventId}}`);
-            await client.del('getAllEvents');
+            await client.flushAll();
             return res.json(updatedUser);
         }catch(e){
             return res.status(e.status).json({error: e.message});
@@ -234,8 +233,7 @@ router
 
         try{
             const updatedUser = await unsignUpUser(eventId, userId, eventOrganizer);
-            await client.del(`event:{${eventId}}`);
-            await client.del('getAllEvents');
+            await client.flushAll();
             return res.json(updatedUser);
         }catch(e){
             return res.status(404).json({error: e});
