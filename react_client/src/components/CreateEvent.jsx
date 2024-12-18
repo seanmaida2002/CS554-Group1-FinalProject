@@ -101,6 +101,7 @@ function CreateEventModal(props) {
           const outputBlob = new Blob([result.outputFiles[0].content], { type: 'image/jpeg' });
           const outputURL = URL.createObjectURL(outputBlob);
           setFile(outputURL);
+          setImage(outputBlob);
         }
       };
   
@@ -421,16 +422,18 @@ function CreateEventModal(props) {
         </label>
       </div>
       <div>
-        <label>Upload Event Image:
-          <input type="file" accept="image/*" onChange={uploadFile} />
-        </label>
-        {file && <img src={file} alt="Preview" style={{ 
-        maxWidth: '300px', 
-        maxHeight: '200px', 
-        objectFit: 'cover', 
-        borderRadius: '10px', 
-        marginTop: '10px' 
-    }}  />}
+      <label>Upload Event Image:
+              <input type="file" accept="image/*" onChange={uploadFile} />
+            </label>
+            {file && (<img src={file} alt="Preview" onChange={uploadFile} style={{ 
+            maxWidth: '300px', 
+            maxHeight: '200px', 
+            objectFit: 'cover', 
+            borderRadius: '10px', 
+            marginTop: '10px' 
+        }}  
+        />
+        )}
       </div>
       <button type="submit"
       style={buttonStyles}
