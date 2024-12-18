@@ -204,9 +204,9 @@ router.route('/check-email').post(async (req, res) => {
         const userCollection = await getAllUsers();
         const existingUser = await userCollection.findOne({ email: email });
         if (existingUser !== null) {
-            return res.json({ error: "Email already in use" });
+            return res.status(400).json({ error: "Email already in use" });
         }
-        return res.json({ message: 'Email available' });
+        return res.status(200).json({ message: 'Email available' });
     } catch (e) {
         return res.status(500).json({ error: "Internal Server Error" });
     }
