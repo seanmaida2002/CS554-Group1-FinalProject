@@ -58,14 +58,6 @@ const buttonHoverStyles = {
     color: 'white', 
 }
 
-  const handleUpload = async (event) => {
-    try{
-        const url = await UploadEventImage(image, event);
-        return url;
-    } catch(e){
-        console.log('Error uploading image:', e);
-    }
-  };
 function EditEventModal(props){
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [data, setData] = useState(props.eventData || {});
@@ -84,6 +76,15 @@ function EditEventModal(props){
     const handleCloseEditModal = () => {
         setShowEditModal(false);
         props.handleClose();
+    };
+
+    const handleUpload = async (event) => {
+      try{
+          const url = await UploadEventImage(image, event);
+          return url;
+      } catch(e){
+          console.log('Error uploading image:', e);
+      }
     };
 const uploadFile = async (e) => {
   const uploadedFile = e.target.files[0];
@@ -230,7 +231,7 @@ const uploadFile = async (e) => {
 
 
             let id = data._id;
-            const imageUrl = await handleUpload(data)
+            const imageUrl = await handleUpload(data);
             if(typeof data.tags == 'string'){
               data.tags = data.tags.split(',').map((tag) => tag.trim())
             }
@@ -461,19 +462,6 @@ const uploadFile = async (e) => {
             <label>Upload Event Image:
               <input type="file" accept="image/*" onChange={uploadFile} />
             </label>
-            {file && (
-  <img
-    src={file}
-    alt="Preview"
-    style={{
-      maxWidth: '300px',
-      maxHeight: '200px',
-      objectFit: 'cover',
-      borderRadius: '10px',
-      marginTop: '10px',
-    }}
-  />
-)}
           </div>
           <button type="submit"
                     style={buttonStyles}
