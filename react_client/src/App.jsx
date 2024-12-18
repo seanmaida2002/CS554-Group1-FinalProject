@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Navigation from "./components/Navigation";
 import Home from "./components/Home";
 import RegisterSocialSignOn from "./components/RegisterSocialSignOn";
+import NotFound from "./components/NotFound";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path='/register/socialSignOn' element={<RegisterSocialSignOn />} />
-          
+          <Route path='*' element={<NotFound/>}/>
         </Routes>
       </div>
     </AuthProvider>

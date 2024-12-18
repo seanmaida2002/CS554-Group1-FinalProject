@@ -156,7 +156,14 @@
         height: 2rem;
     }
 }
-
+.notFoundDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    flex-direction: column;
+  }
 .hintText{
     font-size: 12px;
     margin: 0px;
