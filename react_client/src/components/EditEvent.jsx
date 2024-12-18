@@ -210,31 +210,43 @@ const uploadFile = async (e) => {
         setError('Error with Firebase user ID');
         return;
     }
-    let updatedEvent = {...data, userId:data._id}
-    if(typeof data.tags == 'string'){
-      data.tags = [data.tags]
-    }
-    try {
-      const response = await axios.patch(`http://3.139.82.74:3000/events/${data._id}`, {
-        eventName: data.eventName.trim(),
-        sport: data.sport.trim(),
-        location: data.location.trim(),
-        date: data.date.trim(),
-        time: data.time.trim(),
-        eventSize: data.eventSize,
-        tags: data.tags,
-        description: data.description.trim(),
-        userId: firebaseUid,
-        imageUrl: image ? await UploadEventImage(image, updatedEvent) : data.imageUrl,
-      });
-    
-      console.log('Event updated successfully:', response.data);
-      alert('Event updated!');
-      handleCloseEditModal();
-      window.location.reload();
-    } catch (e) {
-      console.error('Error updating event:', e.response?.data || e.message);
-      setError(e.response?.data?.message || 'Could not edit event');
+
+            // let eventName = document.getElementById('eventName').value;
+            // let sport = document.getElementById('sport').value;
+            // let location = document.getElementById('location').value;
+            // let date = document.getElementById('date').value;
+            // let time = document.getElementById('time').value;
+            // let eventSize = Number(document.getElementById('eventSize').value);
+            // let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
+            // let description =  document.getElementById('description').value;
+            // let id = data._id;
+
+
+            let id = data._id;
+            const imageUrl = await handleUpload(data)
+            if(typeof data.tags == 'string'){
+              data.tags = [data.tags];
+            }
+            try {
+                const response = await axios.patch(`http://3.139.82.74:3000/events/${id}`, {
+                  eventName: data.eventName.trim(),
+                  sport: data.sport.trim(),
+                  location: data.location.trim(),
+                  date: data.date.trim(),
+                  time: data.time.trim(),
+                  eventSize: data.eventSize, 
+                  tags: data.tags, 
+                  description: data.description.trim(),
+                  userId: firebaseUid,
+                  imageUrl: imageUrl
+                });
+                alert ('Event updated!');
+                handleCloseEditModal();
+                window.location.reload();
+    }catch(e){
+      console.log(data)
+        setError(e.response?.data?.message || 'Could not edit event')
+
     }
 };
     return (
