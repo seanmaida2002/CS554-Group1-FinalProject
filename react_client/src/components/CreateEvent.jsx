@@ -71,6 +71,14 @@ function CreateEventModal(props) {
     setShowCreateModal(false);
     props.handleClose();
   };
+  const handleUpload = async (event) => {
+    try{
+        const url = await UploadEventImage(image, event);
+        return url;
+    } catch(e){
+        console.log('Error uploading image:', e);
+    }
+  };
   const uploadFile = async (e) => {
     const uploadedFile = e.target.files[0];
     if (!uploadedFile) {

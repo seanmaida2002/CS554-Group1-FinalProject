@@ -58,7 +58,14 @@ const buttonHoverStyles = {
     color: 'white', 
 }
 
-
+  const handleUpload = async (event) => {
+    try{
+        const url = await UploadEventImage(image, event);
+        return url;
+    } catch(e){
+        console.log('Error uploading image:', e);
+    }
+  };
 function EditEventModal(props){
     const [showEditModal, setShowEditModal] = useState(props.isOpen);
     const [data, setData] = useState(props.eventData || {});
@@ -225,7 +232,7 @@ const uploadFile = async (e) => {
             let id = data._id;
             const imageUrl = await handleUpload(data)
             if(typeof data.tags == 'string'){
-              data.tags = [data.tags];
+              data.tags = data.tags.split(',').map((tag) => tag.trim())
             }
             try {
                 const response = await axios.patch(`http://3.139.82.74:3000/events/${id}`, {
