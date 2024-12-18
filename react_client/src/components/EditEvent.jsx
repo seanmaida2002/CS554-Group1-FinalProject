@@ -266,6 +266,7 @@ const uploadFile = async (e) => {
         style={customStyles}
         onRequestClose={handleCloseEditModal}
       >
+        <h2 style={{textAlign: 'center', margin: 'none'}}>Edit Event</h2>
         <form className="editEvent-form" onSubmit={handleSubmit}>
           {error && <h4 className="error">{error}</h4>}
           <div>
@@ -279,7 +280,7 @@ const uploadFile = async (e) => {
             />
             </label>
           </div>
-          <div>
+          <div className='sportAndSizeDiv'>
             <label>
               Sport:
               <select id="sport"
@@ -296,19 +297,26 @@ const uploadFile = async (e) => {
                 <option value="Pickleball">Pickleball</option>
                 </select>
             </label>
-          </div>
-          <div>
             <label>
-              Date (please enter in format MM/DD/YYYY):
-              <input
-        type="text"
-        id="date"
-        value={data.date}
-        onChange={(e) => setData({ ...data, date: e.target.value })}
-              />
+              Event Size:
+                  <input
+            type="number"
+            id="eventSize"
+            value={data.eventSize}
+            onChange={(e) => setData({ ...data, eventSize: e.target.value })}
+                  />
             </label>
           </div>
-          <div>
+          <div className='dateAndTimeDiv'>
+            <label>
+                Date (please enter in format MM/DD/YYYY):
+                <input
+          type="text"
+          id="date"
+          value={data.date}
+          onChange={(e) => setData({ ...data, date: e.target.value })}
+                />
+            </label>
             <label>
               Time:
               <select
@@ -417,7 +425,7 @@ const uploadFile = async (e) => {
           </div>
           <div>
             <label>
-            Location "address, town, state(abbreviated) zipcode":
+            Location:
               <input
         type="text"
         id="location"
@@ -425,19 +433,9 @@ const uploadFile = async (e) => {
         onChange={(e) => setData({ ...data, location: e.target.value })}
               />
             </label>
+            <p className='hintText'>"Address, Town, State(Abbreviated) Zipcode"</p>
           </div>
-          <div>
-            <label>
-              Event Size:
-              <input
-        type="number"
-        id="eventSize"
-        value={data.eventSize}
-        onChange={(e) => setData({ ...data, eventSize: e.target.value })}
-              />
-            </label>
-          </div>
-          <div>
+           <div>
             <label>
               Tags (please enter tags seperated by commas):
               <input

@@ -161,9 +161,13 @@
     font-size: 12px;
     margin: 0px;
 }
+.editEvent-form div,
 .createEvent-form div{
     padding: 10px 0;
 }
+.editEvent-form div label input,
+.editEvent-form div label select,
+.editEvent-form div label textarea,
 .createEvent-form div label input,
 .createEvent-form div label select, 
 .createEvent-form div label textarea {
@@ -171,6 +175,7 @@
     border-radius: 5px;
     padding: 5px;
 }
+.editEvent-form div label,
 .createEvent-form div label, 
 #edit-profile div label{
     display: flex;

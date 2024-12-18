@@ -248,6 +248,7 @@ function CreateEventModal(props) {
         style={customStyles}
         onRequestClose={handleCloseCreateModal}
       >
+        <h2 style={{textAlign: 'center', margin: 'none'}}>Create Event</h2>
         <form className="createEvent-form" onSubmit={handleSubmit}>
           {error && <h4 className="error">{error}</h4>}
           <div>
@@ -449,14 +450,6 @@ function CreateEventModal(props) {
             <label>Upload Event Image:
               <input type="file" accept="image/*" onChange={uploadFile} />
             </label>
-            {file && <img src={file} alt="Preview" style={{ 
-            maxWidth: '200px', 
-            maxHeight: '125px', 
-            borderRadius: '10px', 
-            marginTop: '10px' 
-        }}  
-        />
-        }
       </div>
       <button type="submit"
       style={buttonStyles}
