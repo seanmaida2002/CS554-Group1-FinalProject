@@ -277,9 +277,14 @@ function Home() {
             <div className="notComment">
               <div className="info">
                 <div className="title">
-                  <h2>
-                    {event.eventName}: {event.sport}
-                  </h2>
+                  <div className="titleAndLocation">
+                    <h2>
+                      {event.eventName}: {event.sport}
+                    </h2>
+                    <h4>
+                      {event.time} on {event.date}
+                    </h4>
+                  </div>
                   <div
                     className="signed"
                     onClick={() => {
@@ -303,12 +308,9 @@ function Home() {
                     {event.usersSignedUp.length}/{event.eventSize}
                   </div>
                 </div>
-                <h4>
-                  {event.time} on {event.date}
-                </h4>
                 <img alt="No Image" src= {event.imageUrl}/>
                 <p>{event.description}</p>
-                <p>Location: {event.location}</p>
+                <p><strong>Location:</strong> {event.location}</p>
                 <div className="myButtons">
                   {view === "myEvents" && delId != event._id && (
                     <div>
@@ -405,18 +407,20 @@ function Home() {
                   )}
                 </div>
               ))}
-              <input
-                type="text"
-                className="add"
-                placeholder="Add a comment"
-                value={newComment[event._id] || ""}
-                onChange={(e) => handleCommentChange(event._id, e.target.value)}
-              />
-              <button
-                onClick={() => handleAddComment(event._id, userInfo?.username)}
-              >
-                Submit
-              </button>
+              <div className="addCommentDiv">
+                <input
+                  type="text"
+                  className="add"
+                  placeholder="Add a comment"
+                  value={newComment[event._id] || ""}
+                  onChange={(e) => handleCommentChange(event._id, e.target.value)}
+                />
+                <button
+                  onClick={() => handleAddComment(event._id, userInfo?.username)}
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
         ))}
