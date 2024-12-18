@@ -8,7 +8,7 @@ import axios from 'axios';
 import { AuthContext } from "../context/AuthContext";
 
 function Profile() {
-    const [buttonPopup, setButtonPopup] = useState(false);
+    const [changePasswordButtonPopup, setChangePasswordButtonPopup] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editProfile, setEditProfile] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
@@ -64,8 +64,8 @@ function Profile() {
                 <div id='profile-email'>Email: {`${userProfile.email}`}</div>
                 <br />
                 <button className="button" onClick={() => handleOpenEditModal(userProfile)}>Edit</button>
-                <button className="changePassword-button" onClick={() => setButtonPopup(true)}>Change Password</button>
-                <Popup open={buttonPopup} closeOnDocumentClick onClose={() => setButtonPopup(false)} modal >
+                <button className="changePassword-button" onClick={() => setChangePasswordButtonPopup(true)}>Change Password</button>
+                <Popup open={changePasswordButtonPopup} closeOnDocumentClick onClose={() => setChangePasswordButtonPopup(false)} modal >
                     {(close) => (
                         <div className="popup-overlay">
                             <div className="popup">
