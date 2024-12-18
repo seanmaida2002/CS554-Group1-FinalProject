@@ -10,6 +10,18 @@ import { UploadEventImage } from './EventImage';
 
 
 ReactModal.setAppElement('#root');
+const loadMagick = async () => {
+  if (!window.magick) {
+    try {
+      const Magick = await import('https://knicknic.github.io/wasm-imagemagick/magickApi.js');
+      window.magick = Magick;
+    } catch (error) {
+      console.error("Failed to load ImageMagick WASM module:", error);
+      throw new Error("ImageMagick failed to load.");
+    }
+  }
+  return window.magick;
+};
 const customStyles = {
     content: {
         top: '50%',
@@ -58,30 +70,54 @@ function EditEventModal(props){
         if (props.eventData) {
           setData(props.eventData);
         }
+        if(props.eventData.imageUrl){
+          setFile(props.eventData.imageUrl)
+        }
       }, [props.eventData]);
-
-
     const handleCloseEditModal = () => {
         setShowEditModal(false);
         props.handleClose();
     };
-        const uploadFile = async (e) => {
-          const selectedFile = e.target.files[0];
-          if(selectedFile){
-              setFile(URL.createObjectURL(selectedFile));
-              setImage(selectedFile);
-          }
-        };
-        const handleUpload = async (event) => {
-          try{
-              const url = await UploadEventImage(image, event);
-              return url;
-          } catch(e){
-              console.log('Error uploading image:', e);
-          }
-        };
+const uploadFile = async (e) => {
+  const uploadedFile = e.target.files[0];
+  if (!uploadedFile) {
+    setError('No file selected. Please upload an image.');
+    return;
+  }
+  if (!uploadedFile.type.startsWith('image/')) {
+    setError('Please upload a valid image file.');
+    return;
+  }
+  setImage(uploadedFile);
+  try {
+    const Magick = await loadMagick();
+    const reader = new FileReader();
 
+    reader.onload = async () => {
+      const inputBuffer = new Uint8Array(reader.result);
+      const inputFileName = 'input.jpg';
+      const outputFileName = 'output.jpg';
 
+      const result = await Magick.execute({
+        inputFiles: [{ name: inputFileName, content: inputBuffer }],
+        commands: ['convert', inputFileName, '-quality', '75', outputFileName],
+      });
+
+        console.log("ImageMagick Execution Result:", result);
+
+        if (result.outputFiles.length > 0) {
+          const outputBlob = new Blob([result.outputFiles[0].content], { type: 'image/jpeg' });
+          const outputURL = URL.createObjectURL(outputBlob);
+          setFile(outputURL);
+          setImage(outputBlob);
+        } 
+      }
+      reader.readAsArrayBuffer(uploadedFile);
+      } catch (processingError) {
+        console.error("Image processing error:", processingError);
+        setError('Failed to process the image.');
+      }
+    };
     const checkData = () => {
       let { eventName, sport, location, date, eventSize, tags, description } = data;
       
@@ -174,42 +210,31 @@ function EditEventModal(props){
         setError('Error with Firebase user ID');
         return;
     }
-
-            // let eventName = document.getElementById('eventName').value;
-            // let sport = document.getElementById('sport').value;
-            // let location = document.getElementById('location').value;
-            // let date = document.getElementById('date').value;
-            // let time = document.getElementById('time').value;
-            // let eventSize = Number(document.getElementById('eventSize').value);
-            // let tags = document.getElementById('tags').value.split(',').map((tag) => tag.trim());
-            // let description =  document.getElementById('description').value;
-            // let id = data._id;
-
-
-            let id = data._id;
-            const imageUrl = await handleUpload(data)
-            if(typeof data.tags == 'string'){
-              data.tags = [data.tags];
-            }
-            try {
-                const response = await axios.patch(`http://3.22.68.13:3000/events/${id}`, {
-                  eventName: data.eventName.trim(),
-                  sport: data.sport.trim(),
-                  location: data.location.trim(),
-                  date: data.date.trim(),
-                  time: data.time.trim(),
-                  eventSize: data.eventSize, 
-                  tags: data.tags, 
-                  description: data.description.trim(),
-                  userId: firebaseUid,
-                  imageUrl: imageUrl
-                });
-                alert ('Event updated!');
-                handleCloseEditModal();
-                window.location.reload();
-    }catch(e){
-      console.log(data)
-        setError(e.response?.data?.message || 'Could not edit event')
+    let updatedEvent = {...data, userId:data._id}
+    if(typeof data.tags == 'string'){
+      data.tags = [data.tags]
+    }
+    try {
+      const response = await axios.patch(`http://3.22.68.13:3000/events/${data._id}`, {
+        eventName: data.eventName.trim(),
+        sport: data.sport.trim(),
+        location: data.location.trim(),
+        date: data.date.trim(),
+        time: data.time.trim(),
+        eventSize: data.eventSize,
+        tags: data.tags,
+        description: data.description.trim(),
+        userId: firebaseUid,
+        imageUrl: image ? await UploadEventImage(image, updatedEvent) : data.imageUrl,
+      });
+    
+      console.log('Event updated successfully:', response.data);
+      alert('Event updated!');
+      handleCloseEditModal();
+      window.location.reload();
+    } catch (e) {
+      console.error('Error updating event:', e.response?.data || e.message);
+      setError(e.response?.data?.message || 'Could not edit event');
     }
 };
     return (
@@ -417,13 +442,19 @@ function EditEventModal(props){
             <label>Upload Event Image:
               <input type="file" accept="image/*" onChange={uploadFile} />
             </label>
-            {file && <img src={file} alt="Preview" style={{ 
-            maxWidth: '300px', 
-            maxHeight: '200px', 
-            objectFit: 'cover', 
-            borderRadius: '10px', 
-            marginTop: '10px' 
-        }}  />}
+            {file && (
+  <img
+    src={file}
+    alt="Preview"
+    style={{
+      maxWidth: '300px',
+      maxHeight: '200px',
+      objectFit: 'cover',
+      borderRadius: '10px',
+      marginTop: '10px',
+    }}
+  />
+)}
           </div>
           <button type="submit"
                     style={buttonStyles}

@@ -18,7 +18,8 @@
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.1",
     "react-router-dom": "^7.0.1",
-    "reactjs-popup": "^2.0.6"
+    "reactjs-popup": "^2.0.6",
+    "wasm-imagemagick": "^1.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

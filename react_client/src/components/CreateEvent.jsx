@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import ReactModal from 'react-modal';
 import axios from 'axios';
@@ -6,8 +6,14 @@ import { getAuth } from 'firebase/auth';
 import { checkDate } from '../helpers';
 import { UploadEventImage } from './EventImage';
 
-
 ReactModal.setAppElement('#root');
+const loadMagick = async () => {
+  if (!window.magick) {
+    const Magick = await import('https://knicknic.github.io/wasm-imagemagick/magickApi.js');
+    window.magick = Magick;
+  }
+  return window.magick;
+};
 const customStyles = {
     content: {
         top: '50%',
@@ -41,133 +47,91 @@ const buttonStyles = {
 };
 
 const buttonHoverStyles = {
-    backgroundColor: '#004080', 
-    color: 'white', 
-}
-function CreateEventModal(props){
-    const [showCreateModal, setShowCreateModal] = useState(props.isOpen);
-    const [file, setFile] = useState(null);
-    const [image, setImage] = useState(null);
-    const [data, setData] = useState({
-        eventName:'',
-        sport:'',
-        location:'',
-        date:'',
-        time:'',
-        eventSize:'',
-        tags:'',
-        description:''
-    });
-    const [error, setError] = useState('');
+  backgroundColor: '#004080',
+  color: 'white',
+};
 
-    const handleCloseCreateModal = () => {
-        setShowCreateModal(false);
-        props.handleClose();
-    };
-    const uploadFile = async (e) => {
-      const selectedFile = e.target.files[0];
-      if(selectedFile){
-          setFile(URL.createObjectURL(selectedFile));
-          setImage(selectedFile);
-      }
-    };
-    const handleUpload = async (event) => {
-      try{
-          const url = await UploadEventImage(image, event);
-          return url;
-      } catch(e){
-          console.log('Error uploading image:', e);
-      }
-    };
+function CreateEventModal(props) {
+  const [showCreateModal, setShowCreateModal] = useState(props.isOpen);
+  const [file, setFile] = useState(null);
+  const [image, setImage] = useState(null);
+  const [data, setData] = useState({
+    eventName: '',
+    sport: '',
+    location: '',
+    date: '',
+    time: '',
+    eventSize: '',
+    tags: '',
+    description: '',
+  });
+  const [error, setError] = useState('');
 
-    const checkData = () => {
-      let { eventName, sport, location, date, eventSize, tags, description } = data;
-      
-      if (typeof eventName !== 'string' || eventName.trim() === '') {
-          setError('Invalid Event Name');
-          return false;
-      }
-      if (eventName.trim().length > 50) {
-          setError('Event name must be at most 50 characters');
-          return false;
-      }
-      if (typeof sport !== 'string' || sport.trim() === '') {
-          setError('Invalid Sport');
-          return false;
-      }
-      if (sport.trim().length > 50) {
-          setError('Sport must be at most 50 characters');
-          return false;
-      }
-      if (typeof location !== 'string' || location.trim() === '') {
-          setError('Invalid Location');
-          return false;
-      }
-      if (location.trim().length > 100) {
-          setError('Location must be at most 100 characters');
-          return false;
-      }
-      let dateCheck = checkDate(date, 'Date');
-      if (!date || dateCheck !== date) {
-          setError(dateCheck || 'Invalid Date');
-          return false;
-      }
-      if (typeof Number.parseInt(eventSize) !== 'number' || eventSize <= 0) {
-          setError('Invalid Event Size');
-          return false;
-      }
-      if (tags) {
-        const tagArray = tags.split(',').map((tag) => tag.trim());
-        if (tagArray.length > 5) {
-            setError('You can only add up to 5 tags for each event');
-            return false;
-        }
-        for (let tag of tagArray) {
-            if (typeof tag !== 'string' || tag === '') {
-                setError('Each tag must be a non-empty string');
-                return false;
-            }
-            if (tag.length > 20) {
-                setError('Each tag can only be up to 20 characters');
-                return false;
-            }
-        }
-    }
-      if (typeof description !== 'string' || description.trim() === '') {
-          setError('Invalid Description');
-          return false;
-      }
-      if (description.trim().length > 250) {
-          setError('Description must be at most 250 characters');
-          return false;
-      }
-      
-      setError('');
-      return true;
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    props.handleClose();
   };
+  const uploadFile = async (e) => {
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) {
+      setError('Please upload a valid image file.');
+      return;
+    }
   
+    if (!uploadedFile.type.startsWith('image/')) {
+      setError('File must be an image.');
+      return;
+    }
+    setImage(uploadedFile);
+  
+    try {
+      const Magick = await loadMagick();
+      const reader = new FileReader();
+  
+      reader.onload = async () => {
+        const inputBuffer = new Uint8Array(reader.result);
+        const inputFileName = 'input.jpg';
+        const outputFileName = 'output.jpg';
+  
+        const result = await Magick.execute({
+          inputFiles: [{ name: inputFileName, content: inputBuffer }],
+          commands: ['convert', inputFileName, '-quality', '75', outputFileName],
+        });
+  
+        if (result.outputFiles.length > 0) {
+          const outputBlob = new Blob([result.outputFiles[0].content], { type: 'image/jpeg' });
+          const outputURL = URL.createObjectURL(outputBlob);
+          setFile(outputURL);
+          setImage(outputBlob);
+        }
+      };
+  
+      reader.readAsArrayBuffer(uploadedFile);
+    } catch (err) {
+      console.error('ImageMagick Error:', err);
+      setError('Failed to process the image.');
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!checkData()) {
-        return;
-    }
-
+  
+    if (!checkData()) return;
+  
     const auth = getAuth();
     const firebaseUid = auth.currentUser?.uid;
+  
     if (!firebaseUid) {
-        setError('Error with Firebase user ID');
-        return;
+      setError('Firebase user authentication failed.');
+      return;
     }
-
+  
     try {
-        const createEventData = {
-            ...data,
-            eventSize: Number(data.eventSize),
-            tags: data.tags.split(',').map((tag) => tag.trim()),
-            eventOrganizer: firebaseUid,
-        };
-
+      const createEventData = {
+        ...data,
+        eventSize: Number(data.eventSize),
+        tags: data.tags ? data.tags.split(',').map((tag) => tag.trim()) : [],
+        eventOrganizer: firebaseUid,
+      };
         const createResponse = await axios.post('http://3.22.68.13:3000/events/', createEventData);
         const id = createResponse.data._id;
 
@@ -196,6 +160,74 @@ function CreateEventModal(props){
         console.error('Error:', e);
         setError(e.response?.data?.message || 'Could not create or update the event');
     }
+  };
+  
+
+  const checkData = () => {
+    let { eventName, sport, location, date, eventSize, tags, description } = data;
+    
+    if (typeof eventName !== 'string' || eventName.trim() === '') {
+        setError('Invalid Event Name');
+        return false;
+    }
+    if (eventName.trim().length > 50) {
+        setError('Event name must be at most 50 characters');
+        return false;
+    }
+    if (typeof sport !== 'string' || sport.trim() === '') {
+        setError('Invalid Sport');
+        return false;
+
+    }
+    if (sport.trim().length > 50) {
+        setError('Sport must be at most 50 characters');
+        return false;
+    }
+    if (typeof location !== 'string' || location.trim() === '') {
+        setError('Invalid Location');
+        return false;
+    }
+    if (location.trim().length > 100) {
+        setError('Location must be at most 100 characters');
+        return false;
+    }
+    let dateCheck = checkDate(date, 'Date');
+    if (!date || dateCheck !== date) {
+        setError(dateCheck || 'Invalid Date');
+        return false;
+    }
+    if (typeof Number.parseInt(eventSize) !== 'number' || eventSize <= 0) {
+        setError('Invalid Event Size');
+        return false;
+    }
+    if (tags) {
+      const tagArray = tags.split(',').map((tag) => tag.trim());
+      if (tagArray.length > 5) {
+          setError('You can only add up to 5 tags for each event');
+          return false;
+      }
+      for (let tag of tagArray) {
+          if (typeof tag !== 'string' || tag === '') {
+              setError('Each tag must be a non-empty string');
+              return false;
+          }
+          if (tag.length > 20) {
+              setError('Each tag can only be up to 20 characters');
+              return false;
+          }
+      }
+  }
+    if (typeof description !== 'string' || description.trim() === '') {
+        setError('Invalid Description');
+        return false;
+    }
+    if (description.trim().length > 250) {
+        setError('Description must be at most 250 characters');
+        return false;
+    }
+    
+    setError('');
+    return true;
 };
 
     return (
@@ -413,21 +445,23 @@ function CreateEventModal(props){
             maxHeight: '125px', 
             borderRadius: '10px', 
             marginTop: '10px' 
-        }}  />}
-          </div>
-          <button type="submit"
-          style={buttonStyles}
-          onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
-          >Create Event</button>
-          <button type="button" onClick={handleCloseCreateModal}
-          style={buttonStyles}
-          onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
-          >Cancel</button>
-        </form>
-      </ReactModal>
-    </div>
-  );
+        }}  
+        />
+        )}
+      </div>
+      <button type="submit"
+      style={buttonStyles}
+      onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+      onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
+      >Create Event</button>
+      <button type="button" onClick={handleCloseCreateModal}
+      style={buttonStyles}
+      onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyles.backgroundColor)}
+      onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyles.backgroundColor)}
+      >Cancel</button>
+    </form>
+  </ReactModal>
+</div>
+);
 }
-export default CreateEventModal
+export default CreateEventModal;
