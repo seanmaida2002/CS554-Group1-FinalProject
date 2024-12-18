@@ -47,7 +47,7 @@ const SocialSignIn = () => {
                 dateOfBirth: dateOfBirth,
                 firebaseUid: firebaseUid
             }
-            await axios.post('http://localhost:3000/user/socialSignOn', user, {
+            await axios.post('http://3.22.68.13:3000/user/socialSignOn', user, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
