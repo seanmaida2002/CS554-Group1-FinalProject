@@ -11,7 +11,7 @@ const SocialSignIn = () => {
             await doSocialSignIn();
             const auth = getAuth();
             const currentUser = auth.currentUser;
-            const emailCheck = await axios.post('http://localhost:3000/user/check-email', { email: currentUser.email }, {
+            const emailCheck = await axios.post('http://3.139.82.74:3000/user/check-email', { email: currentUser.email }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -19,7 +19,7 @@ const SocialSignIn = () => {
 
             if (emailCheck.data.message === "Email available") {
                 const registerUser = await registerNewUser(auth);
-                const user = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                const user = await axios.get(`http://3.139.82.74:3000/user/${currentUser.uid}`);
                 navigate('/register/socialSignOn');
             }
             
@@ -47,7 +47,7 @@ const SocialSignIn = () => {
                 dateOfBirth: dateOfBirth,
                 firebaseUid: firebaseUid
             }
-            await axios.post('http://localhost:3000/user/socialSignOn', user, {
+            await axios.post('http://3.139.82.74:3000/user/socialSignOn', user, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

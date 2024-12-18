@@ -168,7 +168,7 @@ function CreateEventModal(props){
             eventOrganizer: firebaseUid,
         };
 
-        const createResponse = await axios.post('http://localhost:3000/events/', createEventData);
+        const createResponse = await axios.post('http://3.139.82.74:3000/events/', createEventData);
         const id = createResponse.data._id;
 
         if (image) {
@@ -185,7 +185,7 @@ function CreateEventModal(props){
               userId: firebaseUid,
               imageUrl: imageUrl
             };
-            await axios.patch(`http://localhost:3000/events/${id}`, updateEventData);
+            await axios.patch(`http://3.139.82.74:3000/events/${id}`, updateEventData);
         }
 
         alert('Event Created!');

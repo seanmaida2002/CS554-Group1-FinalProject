@@ -32,7 +32,7 @@ function Profile() {
         if (currentUser) {
             const fetchUserProfile = async () => {
                 try {
-                    const { data: user } = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                    const { data: user } = await axios.get(`http://3.139.82.74:3000/user/${currentUser.uid}`);
                     setUserProfile(user);
                     setLoading(false);
                 } catch (e) {
