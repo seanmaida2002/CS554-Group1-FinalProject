@@ -308,7 +308,7 @@ function Home() {
                     {event.usersSignedUp.length}/{event.eventSize}
                   </div>
                 </div>
-                <img alt="No Image" src= {event.imageUrl}/>
+                <img alt="Event Image" src= {event.imageUrl}/>
                 <p>{event.description}</p>
                 <p><strong>Location:</strong> {event.location}</p>
                 <div className="myButtons">
