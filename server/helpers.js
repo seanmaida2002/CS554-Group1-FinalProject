@@ -230,7 +230,7 @@ export function checkValidLocation(location, variableName){
     if(typeof location !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
     location = location.trim();
     if(location.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
-    if(!/^\d+\s[A-Za-z\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}$/.test(location)) throw "Error Location not in valid format."
+    if(!/^\d+\s[A-Za-z0-9\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}$/.test(location)) throw "Error Location not in valid format."
     // How else are we validating location, is it the name of the venue or the address?
     return location;
 }
