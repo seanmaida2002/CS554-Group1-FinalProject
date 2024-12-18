@@ -35,7 +35,7 @@ export function checkValidName(param, name) {
 }
 
 export function checkValidUsername(param) {
-    const usernameRegex = /[!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]/;
+    const usernameRegex = /[!#$%@^&*()_+\-=\[\]{};.':"\\|,<>\/?]/;
     if (param.length < 3 || param.length > 50) {
         throw 'username has to at least 2 characters but less than 50 characters';
     }
@@ -230,7 +230,7 @@ export function checkValidLocation(location, variableName){
     if(typeof location !== "string") throw `Error: ${variableName || "provided variable"} is not a string.`;
     location = location.trim();
     if(location.length === 0) throw `Error: ${variableName || "provided variable"} is an empty string.`;
-    if(!/^\d+\s[A-Za-z\s]+(?:,\s(?:Unit\s\d+|Apt\s[0-9A-Za-z]+))?,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}$/.test(location)) throw "Error Location not in valid format."
+    if(!/^\d+\s[A-Za-z\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}$/.test(location)) throw "Error Location not in valid format."
     // How else are we validating location, is it the name of the venue or the address?
     return location;
 }

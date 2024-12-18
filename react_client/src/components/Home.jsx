@@ -33,7 +33,7 @@ function Home() {
       if (!user) return;
 
       try {
-        const data = await axios.get(`http://localhost:3000/events`);
+        const data = await axios.get(`http://3.22.68.13:3000/events`);
         setEvents(data.data);
         setLoading(false);
       } catch (error) {
@@ -48,7 +48,7 @@ function Home() {
       if (!user) return;
 
       try {
-        const data = await axios.get(`http://localhost:3000/user/${user.uid}`);
+        const data = await axios.get(`http://3.22.68.13:3000/user/${user.uid}`);
         setUserInfo(data.data);
         setLoading(false);
       } catch (error) {
@@ -111,7 +111,7 @@ function Home() {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/events/${eventId}/signUpUser`,
+        `http://3.22.68.13:3000/events/${eventId}/signUpUser`,
         {
           userId: user.uid,
           eventOrganizer: eventOrganizer,
@@ -130,7 +130,7 @@ function Home() {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/events/${eventId}/unsignUpUser`,
+        `http://3.22.68.13:3000/events/${eventId}/unsignUpUser`,
         {
           userId: user.uid,
           eventOrganizer: eventOrganizer,
@@ -148,7 +148,7 @@ function Home() {
   const handleDeleteEvent = async (eventId) => {
     try {
       await axios.delete(
-        `http://localhost:3000/events/${eventId}?userId=${user.uid}`
+        `http://3.22.68.13:3000/events/${eventId}?userId=${user.uid}`
       );
       setMyEvents((prev) => prev.filter((event) => event._id !== eventId));
       setDelId(null);
@@ -168,7 +168,7 @@ function Home() {
 
     try {
       const response = await axios.delete(
-        `http://localhost:3000/events/${eventId}/comments/${commentId}?userId=${user.uid}`
+        `http://3.22.68.13:3000/events/${eventId}/comments/${commentId}?userId=${user.uid}`
       );
 
       // Update the event comments locally
@@ -191,7 +191,7 @@ function Home() {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/events/${eventId}/comments`,
+        `http://3.22.68.13:3000/events/${eventId}/comments`,
         {
           userId: user.uid,
           username: username,
@@ -277,9 +277,14 @@ function Home() {
             <div className="notComment">
               <div className="info">
                 <div className="title">
-                  <h2>
-                    {event.eventName}: {event.sport}
-                  </h2>
+                  <div className="titleAndLocation">
+                    <h2>
+                      {event.eventName}: {event.sport}
+                    </h2>
+                    <h4>
+                      {event.time} on {event.date}
+                    </h4>
+                  </div>
                   <div
                     className="signed"
                     onClick={() => {
@@ -303,12 +308,9 @@ function Home() {
                     {event.usersSignedUp.length}/{event.eventSize}
                   </div>
                 </div>
-                <h4>
-                  {event.time} on {event.date}
-                </h4>
                 <img alt="No Image" src= {event.imageUrl}/>
                 <p>{event.description}</p>
-                <p>Location: {event.location}</p>
+                <p><strong>Location:</strong> {event.location}</p>
                 <div className="myButtons">
                   {view === "myEvents" && delId != event._id && (
                     <div>
@@ -405,18 +407,20 @@ function Home() {
                   )}
                 </div>
               ))}
-              <input
-                type="text"
-                className="add"
-                placeholder="Add a comment"
-                value={newComment[event._id] || ""}
-                onChange={(e) => handleCommentChange(event._id, e.target.value)}
-              />
-              <button
-                onClick={() => handleAddComment(event._id, userInfo?.username)}
-              >
-                Submit
-              </button>
+              <div className="addCommentDiv">
+                <input
+                  type="text"
+                  className="add"
+                  placeholder="Add a comment"
+                  value={newComment[event._id] || ""}
+                  onChange={(e) => handleCommentChange(event._id, e.target.value)}
+                />
+                <button
+                  onClick={() => handleAddComment(event._id, userInfo?.username)}
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
         ))}

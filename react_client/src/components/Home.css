@@ -19,7 +19,6 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
 .otherEvents,
 .attendingEvents,
 .myEvents {
@@ -64,6 +63,42 @@ body {
   gap: 8px;
   margin-top: 12px;
 }
+.comment-item{
+  display: flex;
+  flex-direction: row;
+}
+.comment-item button{
+  margin-left: 10px;
+  background-color: #c2e7ff;
+  color: black;
+  cursor: pointer;
+  border-radius: 12px;
+  border: 2px black solid;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.addCommentDiv button{
+  background-color: #c2e7ff;
+  color: black;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 2px black solid;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.comment-item button:hover {
+  background-color: #004080;
+  color: white;
+}
+
+.addCommentDiv{
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
 
 .tag {
   background-color: #c2e7ff;
@@ -83,6 +118,7 @@ body {
 
 .title h2 {
   margin: 0;
+  color: black;
 }
 
 .title .signed {

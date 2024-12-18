@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import ReactModal from 'react-modal';
 import axios from 'axios';
-import { getAuth, updateEmail } from 'firebase/auth';
-import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
+import { getAuth } from 'firebase/auth';
+import { checkDate, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 import { UploadProfileImage, DeleteProfileImage } from './UploadImage';
 
 ReactModal.setAppElement('#root');
@@ -72,7 +72,6 @@ function EditProfileModal(props) {
     let username;
     let dateOfBirth;
     let phoneNumber;
-    let email;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -99,18 +98,13 @@ function EditProfileModal(props) {
                 setError(phoneNumberError);
                 return;
             }
-            let emailError = checkValidEmail(email.value.trim(), "Email");
-            if (emailError !== email.value.trim()) {
-                setError(emailError);
-                return;
-            }
             if (username.value.trim() !== profile.username) {
                 let usernameError = checkValidUsername(username.value.trim());
                 if (usernameError !== username.value.trim()) {
                     setError(usernameError);
                     return;
                 }
-                const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value }, {
+                const usernameCheck = await axios.post('http://3.22.68.13:3000/user/check-username', { username: username.value }, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -126,7 +120,7 @@ function EditProfileModal(props) {
             let newImageUrl = profile.imageUrl;
             if (image) {
                 if (profile.imageUrl) {
-                    const user = await axios.get(`http://localhost:3000/user/${auth.currentUser.uid}`)
+                    const user = await axios.get(`http://3.22.68.13:3000/user/${auth.currentUser.uid}`)
                     const imagePath = user.data.imagePath;
                     handleDeleteImage(imagePath);
                 }
@@ -138,7 +132,6 @@ function EditProfileModal(props) {
                 firstName: firstName.value,
                 lastName: lastName.value,
                 username: username.value,
-                email: email.value,
                 phoneNumber: phoneNumber.value,
                 dateOfBirth: dateOfBirth.value,
                 imageUrl: newImageUrl,
@@ -148,7 +141,7 @@ function EditProfileModal(props) {
             setError('');
 
             auth.currentUser.displayName = firstName.value + " " + lastName.value;
-            const update = await axios.patch(`http://localhost:3000/user/${firebaseUid}`, updateProfile);
+            const update = await axios.patch(`http://3.22.68.13:3000/user/${firebaseUid}`, updateProfile);
 
             alert("Profile Updated Successfully");
             props.onProfileUpdate(update.data);
@@ -252,14 +245,14 @@ function EditProfileModal(props) {
                             />
                         </label>
                     </div>
-                    <br />
-                    <div className='editProfile-form'>
+                    {/* <br /> */}
+                    {/* <div className='editProfile-form'>
                         {auth.currentUser.providerData[0].providerId === 'password' ?
                             (
                                 <label>
                                     Email:
                                     <br />
-                                    <input
+                                    <input style={{ display: "none" }}
                                         ref={(node) => {
                                             email = node;
                                         }}
@@ -280,7 +273,7 @@ function EditProfileModal(props) {
                                 </label>
                             )
                         }
-                    </div>
+                    </div> */}
                     <br />
                     <div className='editProfile-form'>
                         <label>

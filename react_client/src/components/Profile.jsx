@@ -8,7 +8,7 @@ import axios from 'axios';
 import { AuthContext } from "../context/AuthContext";
 
 function Profile() {
-    const [buttonPopup, setButtonPopup] = useState(false);
+    const [changePasswordButtonPopup, setChangePasswordButtonPopup] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editProfile, setEditProfile] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
@@ -32,7 +32,7 @@ function Profile() {
         if (currentUser) {
             const fetchUserProfile = async () => {
                 try {
-                    const { data: user } = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                    const { data: user } = await axios.get(`http://3.22.68.13:3000/user/${currentUser.uid}`);
                     setUserProfile(user);
                     setLoading(false);
                 } catch (e) {
@@ -64,8 +64,8 @@ function Profile() {
                 <div id='profile-email'>Email: {`${userProfile.email}`}</div>
                 <br />
                 <button className="button" onClick={() => handleOpenEditModal(userProfile)}>Edit</button>
-                <button className="changePassword-button" onClick={() => setButtonPopup(true)}>Change Password</button>
-                <Popup open={buttonPopup} closeOnDocumentClick onClose={() => setButtonPopup(false)} modal >
+                <button className="changePassword-button" onClick={() => setChangePasswordButtonPopup(true)}>Change Password</button>
+                <Popup open={changePasswordButtonPopup} closeOnDocumentClick onClose={() => setChangePasswordButtonPopup(false)} modal >
                     {(close) => (
                         <div className="popup-overlay">
                             <div className="popup">

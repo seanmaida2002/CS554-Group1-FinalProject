@@ -11,15 +11,15 @@ const SocialSignIn = () => {
             await doSocialSignIn();
             const auth = getAuth();
             const currentUser = auth.currentUser;
-            const emailCheck = await axios.post('http://localhost:3000/user/check-email', { email: currentUser.email }, {
+            const emailCheck = await axios.post('http://3.22.68.13:3000/user/check-email', { email: currentUser.email }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
             if (emailCheck.data.message === "Email available") {
-                await registerNewUser(auth);
-                const user = await axios.get(`http://localhost:3000/user/${currentUser.uid}`);
+                const registerUser = await registerNewUser(auth);
+                const user = await axios.get(`http://3.22.68.13:3000/user/${currentUser.uid}`);
                 navigate('/register/socialSignOn');
             }
             

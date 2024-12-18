@@ -15,7 +15,7 @@ function App() {
     <AuthProvider>
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Website Name</h1>
+          <h1 className="App-title">Huddle Up</h1>
           <Navigation />
         </header>
         <Routes>
