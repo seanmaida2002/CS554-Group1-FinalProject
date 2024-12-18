@@ -190,7 +190,6 @@ function Home() {
     if (!user) return;
 
     try {
-      alert(JSON.stringify(user.uid));
       const response = await axios.post(
         `http://3.139.82.74:3000/events/${eventId}/comments`,
         {
