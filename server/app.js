@@ -20,7 +20,7 @@ app.use('/events', async (req, res, next) =>{
       let exists = await client.exists('getAllEvents');
 
       if(exists){
-        let data = await client.json.get('getAllEvents');
+        let data = await client.get('getAllEvents');
         return res.status(200).json(JSON.parse(data));
       }
 
@@ -36,7 +36,7 @@ app.use('/events/:eventId', async (req, res, next) =>{
     let exists = await client.exists(`event:{${id}}`);
 
     if(exists){
-      let data = await client.json.get(`event:{${id}}`);
+      let data = await client.get(`event:{${id}}`);
       return res.status(200).json(JSON.parse(data));
     }
 
