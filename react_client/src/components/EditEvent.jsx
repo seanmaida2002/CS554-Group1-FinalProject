@@ -192,7 +192,7 @@ function EditEventModal(props){
               data.tags = [data.tags];
             }
             try {
-                const response = await axios.patch(`http://localhost:3000/events/${id}`, {
+                const response = await axios.patch(`http://3.22.68.13:3000/events/${id}`, {
                   eventName: data.eventName.trim(),
                   sport: data.sport.trim(),
                   location: data.location.trim(),

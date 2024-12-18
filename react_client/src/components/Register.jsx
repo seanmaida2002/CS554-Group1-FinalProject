@@ -65,13 +65,13 @@ function Register() {
         }
 
         try {
-            const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value.trim() }, {
+            const usernameCheck = await axios.post('http://3.22.68.13:3000/user/check-username', { username: username.value.trim() }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            const emailCheck = await axios.post('http://localhost:3000/user/check-email', {email: email.value.trim()}, {
+            const emailCheck = await axios.post('http://3.22.68.13:3000/user/check-email', {email: email.value.trim()}, {
                 headers: {
                     'Content-Type' : 'application/json'
                 }
@@ -138,7 +138,7 @@ function Register() {
                 imagePath: imagePath,
                 firebaseUid: firebaseUid
             };
-            const createUser = await axios.post('http://localhost:3000/user', user, {
+            const createUser = await axios.post('http://3.22.68.13:3000/user', user, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
