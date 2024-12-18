@@ -6,6 +6,7 @@ frontend:
           - nvm install 20
           - nvm use 20
           - cd react_client
+          - rm -rf node_modules package-lock.json
           - npm install
       build:
           commands:
