@@ -4,9 +4,8 @@ import { AuthContext } from '../context/AuthContext';
 import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { getAuth } from 'firebase/auth';
+import { getAuth, validatePassword } from 'firebase/auth';
 import { UploadProfileImage } from './UploadImage';
-import {getStorage, getDownloadURL, ref} from 'firebase/storage';
 import { checkDate, checkValidPassword, checkPhoneNumber, checkValidAge, checkValidEmail, checkValidName, checkValidUsername } from '../helpers';
 
 import SocialSignIn from './SocialSignIn';
@@ -14,26 +13,26 @@ import SocialSignIn from './SocialSignIn';
 function Register() {
     const { currentUser } = useContext(AuthContext);
     const [pwMatch, setPWMatch] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState({});
+    const [firebaseError, setFirebaseError] = useState('');
     const [file, setFile] = useState();
     const [image, setImage] = useState('');
-    // const [imageUrl, setImageUrl] = useState(null);
 
     const uploadFile = async (e) => {
         const selectedFile = e.target.files[0];
-        if(selectedFile){
+        if (selectedFile) {
             setFile(URL.createObjectURL(selectedFile));
             setImage(selectedFile);
         }
     };
 
     const handleUpload = async () => {
-        try{
+        try {
             const auth = getAuth();
             const currentUser = auth.currentUser
             const url = await UploadProfileImage(image, currentUser);
             return url;
-        } catch(e){
+        } catch (e) {
             console.log('Error uploading image:', e);
         }
     };
@@ -48,6 +47,15 @@ function Register() {
             dateOfBirth,
             passwordOne,
             passwordTwo } = e.target.elements;
+        
+        let errors = {};
+        setError({});
+        setPWMatch('');
+        setFirebaseError('');
+
+        if (!image) {
+            errors.image = 'Please upload a profile picture';
+        }
 
         if (passwordOne.value !== passwordTwo.value) {
             setPWMatch("Passwords Do Not Match!");
@@ -57,51 +65,58 @@ function Register() {
         }
 
         try {
-            const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value }, {
+            const usernameCheck = await axios.post('http://localhost:3000/user/check-username', { username: username.value.trim() }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
+            const emailCheck = await axios.post('http://localhost:3000/user/check-email', {email: email.value.trim()}, {
+                headers: {
+                    'Content-Type' : 'application/json'
+                }
+            });
+
+            if(emailCheck.data.error){
+                errors.email = emailCheck.data.error ;
+            }
+
             //Error Checking
             let firstNameError = checkValidName(firstName.value.trim(), 'First Name')
             if (firstNameError !== firstName.value.trim()) {
-                setError(firstNameError);
-                return;
+                errors.firstName = firstNameError;
             }
-            let lastNameError = checkValidName(lastName.value.trim(), 'Last Name');
+            let lastNameError= checkValidName(lastName.value.trim(), 'Last Name');
             if (lastNameError !== lastName.value.trim()) {
-                setError(lastNameError);
-                return;
+                errors.lastName = lastNameError;
             }
-            let dobError = checkDate(dateOfBirth.value.trim(), "Date of Birth");
-            if (dobError !== dateOfBirth.value.trim()) {
-                setError(dobError);
-                return;
+            let dateOfBirthError = checkDate(dateOfBirth.value.trim(), "Date of Birth");
+            if (dateOfBirthError !== dateOfBirth.value.trim()) {
+                errors.dateOfBirth = dateOfBirthError;
             }
             let phoneNumberError = checkPhoneNumber(phoneNumber.value.trim(), "Phone Number");
             if (phoneNumberError !== phoneNumber.value.trim()) {
-                setError(phoneNumberError);
-                return;
+                errors.phoneNumber = phoneNumberError;
             }
             let emailError = checkValidEmail(email.value.trim(), "Email");
             if (emailError !== email.value.trim()) {
-                setError(emailError);
-                return;
+                errors.email = emailError;
             }
             let usernameError = checkValidUsername(username.value.trim());
             if (usernameError !== username.value.trim()) {
-                setError(usernameError);
-                return;
+                errors.username = usernameError;
             }
             let validAge = checkValidAge(dateOfBirth.value.trim(), "Date of Birth");
             if (validAge !== true) {
-                setError(validAge);
-                return;
+                errors.validAge = validAge;
             }
             let validPassword = checkValidPassword(passwordOne.value.trim(), "Password");
             if (validPassword !== true) {
-                setError(validPassword);
+                errors.validPassword = validPassword;
+            }
+
+            if(Object.keys(errors).length > 0){
+                setError(errors);
                 return;
             }
 
@@ -129,13 +144,13 @@ function Register() {
                 }
             });
 
-            
+
 
         } catch (e) {
             if (e.response && e.response.data) {
-                setError(e.response.data.error);
+                setFirebaseError(e.response.data.error);
+                return;
             }
-            alert(e);
         }
 
     };
@@ -149,7 +164,9 @@ function Register() {
             <h1>Register</h1>
             <p>Already have an account? <Link to='/login' className='sign-up'>Log In</Link></p>
             {pwMatch && <h4 className='error'>{pwMatch}</h4>}
-            {error && <h4 className='error'>{error}</h4>}
+            {error.validAge && <h4 className='error'>{error.validAge}</h4>}
+            {error.image && <h4 className='error'>{error.image}</h4>}
+            {firebaseError && <h4 className='error'>{firebaseError}</h4>}
             <form onSubmit={handleSignUp}>
                 <div className='register-profile-picture-wrapper'>
                     <label>Profile Picture:</label>
@@ -171,6 +188,7 @@ function Register() {
                             placeholder='Atilla'
                             autoFocus={true} />
                     </label>
+                    {error.firstName && <h4 className='error'>{error.firstName}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -183,6 +201,7 @@ function Register() {
                             type='text'
                             placeholder='Duck' />
                     </label>
+                    {error.lastName && <h4 className='error'>{error.lastName}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -194,6 +213,7 @@ function Register() {
                             type='text'
                             placeholder='MM/YY/YYY' />
                     </label>
+                    {error.dateOfBirth && <h4 className='error'>{error.dateOfBirth}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -205,6 +225,7 @@ function Register() {
                             type='text'
                             placeholder='Phone Number' />
                     </label>
+                    {error.phoneNumber && <h4 className='error'>{error.phoneNumber}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -216,6 +237,7 @@ function Register() {
                             type='email'
                             placeholder='attila@gmail.com' />
                     </label>
+                    {error.email && <h4 className='error'>{error.email}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -227,6 +249,7 @@ function Register() {
                             type='text'
                             placeholder='atilla2024' />
                     </label>
+                    {error.username && <h4 className='error'>{error.username}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>
@@ -240,6 +263,7 @@ function Register() {
                             placeholder='Password'
                             autoComplete='off' />
                     </label>
+                    {error.validPassword && <h4 className='error'>{error.validPassword}</h4>}
                 </div>
                 <br />
                 <div className='register-form'>

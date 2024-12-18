@@ -22,14 +22,14 @@ export function checkValidName(param, name) {
 }
 
 export function checkValidUsername(param) {
-    const usernameRegex = /[!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]/;
+    const usernameRegex = /[!#$@%^&*()_+\-=\[\]{};':."\\|,<>\/?]/;
 
     if(param.trim().length === 0 || param.trim() === ""){
         return "Username not provided";
     }
 
-    if (param.length < 3 || param.length > 50) {
-        return 'Username has to at be least 3 characters but less than 50 characters';
+    if (param.length < 3 || param.length > 12) {
+        return 'Username has to at be least 3 characters but less than 12 characters';
     }
 
     if (usernameRegex.test(param)) {
@@ -143,15 +143,15 @@ export function checkValidPassword(password, name) {
     const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
   
     if (!uppercaseRegex.test(password)) {
-      return `${name} must contain at least one capital letter.`;
+      return `${name} must contain at least one capital letter, at least one digit, and at least one special character.`;
     }
   
     if (!digitRegex.test(password)) {
-      return `${name} must contain at least one digit.`;
+      return `${name} must contain at least one capital letter, at least one digit, and at least one special character.`;
     }
   
     if (!specialCharRegex.test(password)) {
-      return `${name} must contain at least one special character.`;
+      return `${name} must contain at least one capital letter, at least one digit, and at least one special character.`;
     }
   
     return true;
