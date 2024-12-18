@@ -447,7 +447,7 @@ function CreateEventModal(props) {
             marginTop: '10px' 
         }}  
         />
-        )}
+        }
       </div>
       <button type="submit"
       style={buttonStyles}
