@@ -225,7 +225,7 @@ const uploadFile = async (e) => {
         tags: data.tags,
         description: data.description.trim(),
         userId: firebaseUid,
-        imageUrl: image ? await UploadEventImage(image, updatedEvent) : data.imageUrl, // Use existing URL if no new image
+        imageUrl: image ? await UploadEventImage(image, updatedEvent) : data.imageUrl,
       });
     
       console.log('Event updated successfully:', response.data);
