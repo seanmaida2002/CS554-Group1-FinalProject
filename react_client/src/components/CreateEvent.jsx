@@ -19,8 +19,8 @@ const customStyles = {
         width: '50%',
         padding: '20px',
         backgroundColor: '#ffffff',
-        border: '2px solid #c2e7ff',
-        borderRadius: '20px',
+        border: '5px solid #c2e7ff',
+        borderRadius: '10px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
     overlay: {
@@ -29,10 +29,11 @@ const customStyles = {
 };
 
 const buttonStyles = {
-    padding: '20px 40px',
+    padding: '15px',
     fontSize: '20px',
     border: 'none',
     backgroundColor: '#c2e7ff',
+    margin: "5px",
     color: 'black',
     cursor: 'pointer',
     borderRadius: '30px',
@@ -212,6 +213,7 @@ function CreateEventModal(props){
             <label>
               Event Name:
             <input
+              placeholder='Event Name'
               type="text"
               id="eventName"
               value={data.eventName || ''}
@@ -219,7 +221,7 @@ function CreateEventModal(props){
             />
             </label>
           </div>
-          <div>
+          <div className='sportAndSizeDiv'>
             <label>
               Sport:
               <select id="sport"
@@ -236,19 +238,29 @@ function CreateEventModal(props){
                 <option value="Pickleball">Pickleball</option>
                 </select>
             </label>
-          </div>
-          <div>
             <label>
-              Date (please enter in format MM/DD/YYYY):
+              Event Size:
               <input
+              placeholder='EX: 10'
+              type="number"
+              id="eventSize"
+              value={data.eventSize || ''}
+              onChange={(e) => setData({ ...data, eventSize: e.target.value })}
+              />
+            </label>
+          </div>
+
+          <div className='dateAndTimeDiv'>
+            <label>
+              Date (MM/DD/YYYY):
+              <input
+              placeholder='EX: 06/22/2025'
               type="text"
               id="date"
               value={data.date || ''}
               onChange={(e) => setData({ ...data, date: e.target.value })}
               />
             </label>
-          </div>
-          <div>
             <label>
               Time:
               <select id="time"
@@ -356,30 +368,23 @@ function CreateEventModal(props){
           </div>
           <div>
             <label>
-              Location "address, town, state(abbreviated) zipcode":
+              Location:
               <input
+              placeholder='EX: 101 Adams Street, Hoboken, NJ 07030'
               type="text"
               id="location"
               value={data.location || ''}
               onChange={(e) => setData({ ...data, location: e.target.value })}
               />
             </label>
+            <p className='hintText'>"Address, Town, State(Abbreviated) Zipcode"</p>
           </div>
-          <div>
-            <label>
-              Event Size:
-              <input
-              type="number"
-              id="eventSize"
-              value={data.eventSize || ''}
-              onChange={(e) => setData({ ...data, eventSize: e.target.value })}
-              />
-            </label>
-          </div>
+
           <div>
             <label>
               Tags (please enter tags seperated by commas):
               <input
+              placeholder='EX: Pick-up, Fast Paced, For Fun'
               type="text"
               id="tags"
               value={data.tags || ''}
@@ -391,6 +396,7 @@ function CreateEventModal(props){
             <label>
               Description:
               <textarea
+              placeholder='Write a brief description about your event, include any additional information here.'
               type="text"
               id="description"
               value={data.description || ''}
@@ -403,9 +409,8 @@ function CreateEventModal(props){
               <input type="file" accept="image/*" onChange={uploadFile} />
             </label>
             {file && <img src={file} alt="Preview" style={{ 
-            maxWidth: '300px', 
-            maxHeight: '200px', 
-            objectFit: 'cover', 
+            maxWidth: '200px', 
+            maxHeight: '125px', 
             borderRadius: '10px', 
             marginTop: '10px' 
         }}  />}

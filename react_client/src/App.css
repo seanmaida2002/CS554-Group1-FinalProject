@@ -157,6 +157,37 @@
     }
 }
 
+.hintText{
+    font-size: 12px;
+    margin: 0px;
+}
+.createEvent-form div{
+    padding: 10px 0;
+}
+.createEvent-form div label input,
+.createEvent-form div label select, 
+.createEvent-form div label textarea {
+    border: 1px black solid;
+    border-radius: 5px;
+    padding: 5px;
+}
+.createEvent-form div label, 
+#edit-profile div label{
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
+.sportAndSizeDiv, .dateAndTimeDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+.sportAndSizeDiv *, .dateAndTimeDiv *{
+    width: 100%;
+}
+
 .create-event-button,
 .changePassword-button {
     height: 3rem;
