@@ -8,7 +8,7 @@ const app = express();
 const client = redis.createClient();
 await client.connect();
 
-app.use(cors({ origin: 'http://3.139.82.74:5173', methods: ['GET', 'POST', 'PUT', ,'PATCH', 'DELETE'] }));
+app.use(cors({ origin: 'http://localhost:5173', methods: ['GET', 'POST', 'PUT', ,'PATCH', 'DELETE'] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
