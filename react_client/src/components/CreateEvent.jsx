@@ -126,12 +126,13 @@ function CreateEventModal(props) {
     }
   
     try {
-      const createEventData = {
-        ...data,
-        eventSize: Number(data.eventSize),
-        tags: data.tags ? data.tags.split(',').map((tag) => tag.trim()) : [],
-        eventOrganizer: firebaseUid,
-      };
+        const createEventData = {
+            ...data,
+            eventSize: Number(data.eventSize),
+            tags: data.tags.split(',').map((tag) => tag.trim()),
+            eventOrganizer: firebaseUid,
+        };
+
         const createResponse = await axios.post('http://3.139.82.74:3000/events/', createEventData);
         const id = createResponse.data._id;
 

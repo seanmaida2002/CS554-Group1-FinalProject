@@ -13,7 +13,8 @@ router
     .get(async (req, res) => {
         try{
             const allEvents = await getAllEvents();
-            await client.set('getAllEvents',   JSON.stringify(allEvents), {EX: 3600});
+            await client.set('getAllEvents',  JSON.stringify(allEvents), {EX: 3600});
+
             return res.json(allEvents);
           }catch(e){
             return res.status(500).json({error: e});
@@ -62,7 +63,9 @@ router
             } = newEventData;
 
             const eventReturned = await createEvent(eventName, sport, location, eventSize, eventOrganizer, tags, description, date, time);
-            await client.set(`event:{${eventReturned._id.toString()}}`,   JSON.stringify(eventReturned), {EX: 3600});
+
+            await client.json.set(`event:{${eventReturned._id.toString()}}`,  JSON.stringify(eventReturned), {EX: 3600});
+
             await client.del('getAllEvents');
             return res.status(200).json(eventReturned);
         }catch(e){
@@ -84,7 +87,9 @@ router
 
         try{
             const event = await getEventById(id);
-            await client.set(`event:{${id}}`,   JSON.stringify(event), {EX: 3600});
+
+            await client.set(`event:{${id}}`,  JSON.stringify(event), {EX: 3600});
+
             return res.json(event);
           }catch(e){
             return res.status(404).json({error: e});
@@ -157,7 +162,9 @@ router
 
         try{
             const updatedEvent = await updateEvent(eventId, updateData , userId);
+
             await client.set(`event:{${eventId}}`,   JSON.stringify(updatedEvent), {EX: 3600});
+
             await client.del('getAllEvents');
             return res.json(updatedEvent);
         }catch(e){
@@ -260,7 +267,9 @@ router
 
         try{
             let updatedEvent = await addComment(eventId, newCommentData.userId, newCommentData.username, newCommentData.comment);
+
             await client.set(`event:{${eventId}}`,   JSON.stringify(updatedEvent), {EX: 3600});
+
             await client.del('getAllEvents');
             return res.json(updatedEvent);
         }catch(e){
@@ -290,7 +299,9 @@ router
 
         try{
             let updatedEvent = await deleteComment(eventId, commentId, userId);
+
             await client.set(`event:{${eventId}}`,   JSON.stringify(updatedEvent), {EX: 3600});
+
             await client.del('getAllEvents');
             return res.json(updatedEvent);
         }catch(e){  

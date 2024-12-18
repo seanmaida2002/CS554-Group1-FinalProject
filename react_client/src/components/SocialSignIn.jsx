@@ -11,7 +11,8 @@ const SocialSignIn = () => {
             await doSocialSignIn();
             const auth = getAuth();
             const currentUser = auth.currentUser;
-            const emailCheck = await axios.post('http://3.139.82.743000/user/check-email', { email: currentUser.email }, {
+            const emailCheck = await axios.post('http://3.139.82.74:3000/user/check-email', { email: currentUser.email }, {
+
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -47,7 +48,9 @@ const SocialSignIn = () => {
                 dateOfBirth: dateOfBirth,
                 firebaseUid: firebaseUid
             }
-            await axios.post('http://3.139.82.743000/user/socialSignOn', user, {
+
+            await axios.post('http://3.139.82.74:3000/user/socialSignOn', user, {
+
                 headers: {
                     'Content-Type': 'application/json'
                 }
