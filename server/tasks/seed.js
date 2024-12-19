@@ -1,11 +1,12 @@
 import { dbConnection, closeConnection } from "../config/mongoConnection.js";
-
+import redis from 'redis';
 import * as users from "../data/users.js";
 import * as events from '../data/events.js';
-
+const client = redis.createClient();
+await client.connect();
 const db = await dbConnection();
 await db.dropDatabase();
-
+await client.flushAll();
 let user1 = await users.createUser("Cade", "Cermak", "cadecermak", 'cadecermak@gmail.com', '6479868464', '06/27/2003', 
     'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2FX1JsjAeyCdgf7QkYhz6FaAUNNrx1%2FIMG_0456.jpeg?alt=media&token=bb940289-5fa9-496a-8383-df8db7c319ba', 
        'images/userProfileImage/X1JsjAeyCdgf7QkYhz6FaAUNNrx1/IMG_0456.jpeg','X1JsjAeyCdgf7QkYhz6FaAUNNrx1')
@@ -46,5 +47,6 @@ console.log("Done seeding database");
 
     
 await closeConnection();
+await client.quit();
 
 
