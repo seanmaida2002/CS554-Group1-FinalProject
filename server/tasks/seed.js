@@ -4,29 +4,29 @@ import * as users from "../data/users.js";
 import * as events from '../data/events.js';
 
 const db = await dbConnection();
-// await db.dropDatabase();
 
-// const user1 = await users.createUser(
-//     "Sean",
-//     "Maida",
-//     "smaida",
-//     "smaida2002@yahoo.com",
-//     "9738030102",
-//     "10/22/2002"
-// );
-// console.log(user1);
-const event1 = await events.createEvent(
-    "Event Four", 
-    "Soccer", 
-    "new york", 
-    20, 
-    "ytIlyWlQUtSPbjrp9sEbON6DT5K2", 
-    ['5ASide', 'Football', "Soccer"], 
-    'This is a default description for the first event ever',
-    '12/20/2024',
-    '12:00PM'
-)
+let user1 = await users.createUser("Cade", "Cermak", "cadecermak", 'cadecermak@gmail.com', '6479868464', '06/27/2003', 
+    'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2FX1JsjAeyCdgf7QkYhz6FaAUNNrx1%2FIMG_0456.jpeg?alt=media&token=bb940289-5fa9-496a-8383-df8db7c319ba', 
+       'images/userProfileImage/X1JsjAeyCdgf7QkYhz6FaAUNNrx1/IMG_0456.jpeg','X1JsjAeyCdgf7QkYhz6FaAUNNrx1')
+
+let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Hudson St, Hoboken, NJ 07030', 50,
+            'X1JsjAeyCdgf7QkYhz6FaAUNNrx1',  [ 'Ball', 'Big', 'Comp', '5v5' ], 'Huge Competitive Basketball Tournament on New Years Eve. 5v5 Bring your best team. Prize for the winner!', 
+            '12/31/2024', '01:00 PM', 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2Fl.jpg?alt=media&token=a74d3d35-94e5-447b-b761-f1dc338124ef'
+ );
+
+ let user2 = await users.createUser('Bernard', 'Vitale', 'bvitale', "bvitale01@gmail.com", '7326753523', '11/15/2001',
+    'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2Fi0FCZz2o1sZjjDwpobJyllW9mkr1%2Fyankee%20logo.png?alt=media&token=4c34cef3-5e7c-44ac-9094-4b3e6cd6b977', 
+'images/userProfileImage/fl4rIbWzTVOGS0n9ZWTpWlR8fp23/Senior-Picture.JPG', 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23'
+ );
+
+ await events.signUpUser(user1Event._id, 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23', 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1');
+
+ await events.addComment(user1Event._id, 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23', 'bvitale', 'Should we bring anything? I can go grab a few cases of water if you need!')
+
 
 console.log("Done seeding database");
 
+    
 await closeConnection();
+
+
