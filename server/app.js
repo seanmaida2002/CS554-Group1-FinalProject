@@ -8,7 +8,7 @@ const app = express();
 const client = redis.createClient();
 await client.connect();
 
-app.use(cors({ origin: ['http://localhost:5173', 'https://main.d2267q75nzan84.amplifyapp.com/'], methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'] }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://huddleupcs554.s3-website.us-east-2.amazonaws.com'], methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
