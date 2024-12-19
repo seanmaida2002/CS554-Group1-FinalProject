@@ -236,7 +236,7 @@ const uploadFile = async (e) => {
               data.tags = data.tags.split(',').map((tag) => tag.trim())
             }
             try {
-                const response = await axios.patch(`http://3.15.141.91:3000/events/${id}`, {
+                const response = await axios.patch(`http://localhost:3000/events/${id}`, {
                   eventName: data.eventName.trim(),
                   sport: data.sport.trim(),
                   location: data.location.trim(),

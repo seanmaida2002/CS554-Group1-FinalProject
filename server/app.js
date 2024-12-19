@@ -51,5 +51,5 @@ configRoutes(app);
 
 app.listen(3000, () => {
     console.log("We've got a server!");
-    console.log("Your routes will be running on http://3.15.141.91:3000");
+    console.log("Your routes will be running on http://localhost:3000");
   });

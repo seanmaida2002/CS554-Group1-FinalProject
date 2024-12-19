@@ -33,7 +33,7 @@ function Home() {
       if (!user) return;
 
       try {
-        const data = await axios.get('http://3.15.141.91:3000/events');
+        const data = await axios.get('http://localhost:3000/events');
         setEvents(data.data);
         setLoading(false);
       } catch (error) {
@@ -48,7 +48,7 @@ function Home() {
       if (!user) return;
 
       try {
-        const data = await axios.get(`http://3.15.141.91:3000/user/${user.uid}`);
+        const data = await axios.get(`http://localhost:3000/user/${user.uid}`);
         setUserInfo(data.data);
         setLoading(false);
       } catch (error) {
@@ -110,7 +110,7 @@ function Home() {
 
     try {
       const response = await axios.put(
-        `http://3.15.141.91:3000/events/${eventId}/signUpUser`,
+        `http://localhost:3000/events/${eventId}/signUpUser`,
         {
           userId: user.uid,
           eventOrganizer: eventOrganizer,
@@ -133,7 +133,7 @@ function Home() {
 
     try {
       const response = await axios.put(
-        `http://3.15.141.91:3000/events/${eventId}/unsignUpUser`,
+        `http://localhost:3000/events/${eventId}/unsignUpUser`,
         {
           userId: user.uid,
           eventOrganizer: eventOrganizer,
@@ -155,7 +155,7 @@ function Home() {
   const handleDeleteEvent = async (eventId) => {
     try {
       await axios.delete(
-        `http://3.15.141.91:3000/events/${eventId}?userId=${user.uid}`
+        `http://localhost:3000/events/${eventId}?userId=${user.uid}`
       );
       setMyEvents((prev) => prev.filter((event) => event._id !== eventId));
       setDelId(null);
@@ -175,7 +175,7 @@ function Home() {
 
     try {
       const response = await axios.delete(
-        `http://3.15.141.91:3000/events/${eventId}/comments/${commentId}?userId=${user.uid}`
+        `http://localhost:3000/events/${eventId}/comments/${commentId}?userId=${user.uid}`
       );
 
       // Update the event comments locally
@@ -198,7 +198,7 @@ function Home() {
 
     try {
       const response = await axios.post(
-        `http://3.15.141.91:3000/events/${eventId}/comments`,
+        `http://localhost:3000/events/${eventId}/comments`,
         {
           userId: user.uid,
           username: username,
