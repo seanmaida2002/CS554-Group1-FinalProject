@@ -14,9 +14,9 @@ let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Huds
             'X1JsjAeyCdgf7QkYhz6FaAUNNrx1',  [ 'Ball', 'Big', 'Comp', '5v5' ], 'Huge Competitive Basketball Tournament on New Years Eve. 5v5 Bring your best team. Prize for the winner!', 
             '12/31/2024', '01:00 PM', 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2Fl.jpg?alt=media&token=a74d3d35-94e5-447b-b761-f1dc338124ef'
  );
-
+await events.updateEvent(user1Event._id.toString(), {imageUrl: 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2Fl.jpg?alt=media&token=a74d3d35-94e5-447b-b761-f1dc338124ef'}, 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1')
  let user2 = await users.createUser('Bernard', 'Vitale', 'bvitale', "bvitale01@gmail.com", '7326753523', '11/15/2001',
-    'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2Fi0FCZz2o1sZjjDwpobJyllW9mkr1%2Fyankee%20logo.png?alt=media&token=4c34cef3-5e7c-44ac-9094-4b3e6cd6b977', 
+    'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2Ffl4rIbWzTVOGS0n9ZWTpWlR8fp23%2FSenior-Picture.JPG?alt=media&token=db639997-6657-416c-8a4f-0fb4e2249559', 
 'images/userProfileImage/fl4rIbWzTVOGS0n9ZWTpWlR8fp23/Senior-Picture.JPG', 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23'
  );
 
@@ -32,6 +32,9 @@ let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Huds
     'fl4rIbWzTVOGS0n9ZWTpWlR8fp23',  [ 'Pick-Up', 'Tournament', 'Just for fun', 'All Ages' ], 'I will be hosting a roller hockey tournament in Union Beach, NJ. Anyone can join and sign up, we are hoping to get 24 plays, so we can get 4 teams of 5 skaters and a goalie. Should be a fun time, hope you sign up!', 
     '02/15/2025', '06:30 PM', 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2FRoller-Hockey-Rink-e1661457084781.jpg?alt=media&token=d910c701-9ea3-445a-bae7-b100ad943661'
 );
+
+await events.updateEvent(user2Event._id.toString(), {imageUrl: 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2FRoller-Hockey-Rink-e1661457084781.jpg?alt=media&token=d910c701-9ea3-445a-bae7-b100ad943661'},'fl4rIbWzTVOGS0n9ZWTpWlR8fp23');
+
 
 
 await events.signUpUser(user2Event._id.toString(), 'i0FCZz2o1sZjjDwpobJyllW9mkr1', 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23');
