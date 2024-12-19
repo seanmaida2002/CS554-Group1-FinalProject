@@ -28,7 +28,7 @@ let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Huds
  );
 
  let user2Event = await events.createEvent('Roller Hockey Showdown!', 'Hockey',  '405 Prospect Ave, Union Beach, NJ 07735', 24,
-    'X1JsjAeyCdgf7QkYhz6FaAUNNrx1',  [ 'Pick-Up', 'Tournament', 'Just for fun', 'All Ages' ], 'I will be hosting a roller hockey tournament in Union Beach, NJ. Anyone can join and sign up, we are hoping to get 24 plays, so we can get 4 teams of 5 skaters and a goalie. Should be a fun time, hope you sign up!', 
+    'fl4rIbWzTVOGS0n9ZWTpWlR8fp23',  [ 'Pick-Up', 'Tournament', 'Just for fun', 'All Ages' ], 'I will be hosting a roller hockey tournament in Union Beach, NJ. Anyone can join and sign up, we are hoping to get 24 plays, so we can get 4 teams of 5 skaters and a goalie. Should be a fun time, hope you sign up!', 
     '02/15/2025', '06:30 PM', 'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2Fevents%2Fundefined%2FRoller-Hockey-Rink-e1661457084781.jpg?alt=media&token=d910c701-9ea3-445a-bae7-b100ad943661'
 );
 
