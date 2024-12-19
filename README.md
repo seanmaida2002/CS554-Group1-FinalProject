@@ -43,7 +43,11 @@ For users who want to run the frontend locally, instructions are provided below.
     ```bash
     npm i
     ```
-3. **Start Server:**
+3. **Seed Local Server:**
+    ```bash
+    npm run seed
+    ```
+4. **Start Server:**
     ```bash
     npm start
     ```
