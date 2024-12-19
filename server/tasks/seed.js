@@ -4,6 +4,7 @@ import * as users from "../data/users.js";
 import * as events from '../data/events.js';
 
 const db = await dbConnection();
+await db.dropDatabase();
 
 let user1 = await users.createUser("Cade", "Cermak", "cadecermak", 'cadecermak@gmail.com', '6479868464', '06/27/2003', 
     'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2FX1JsjAeyCdgf7QkYhz6FaAUNNrx1%2FIMG_0456.jpeg?alt=media&token=bb940289-5fa9-496a-8383-df8db7c319ba', 
