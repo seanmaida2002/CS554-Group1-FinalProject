@@ -33,7 +33,7 @@ function Home() {
       if (!user) return;
 
       try {
-        const data = await axios.get('https://cors-anywhere.herokuapp.com/http://3.139.82.74:3000/events');
+        const data = await axios.get('http://3.139.82.74:3000/events');
         setEvents(data.data);
         setLoading(false);
       } catch (error) {
