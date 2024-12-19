@@ -21,7 +21,7 @@ let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Huds
 
  await events.signUpUser(user1Event._id.toString(), 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23', 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1');
 
- await events.addComment(user1Event._id, 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23', 'bvitale', 'Should we bring anything? I can go grab a few cases of water if you need!')
+ await events.addComment(user1Event._id.toString(), 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23', 'bvitale', 'Should we bring anything? I can go grab a few cases of water if you need!')
  let user3 = await users.createUser('Sean', 'Maida', 'smaida', "smaida2002@yahoo.com", '9738030102', '10/22/2002',
     'https://firebasestorage.googleapis.com/v0/b/cs554-group1-finalproject.firebasestorage.app/o/images%2FuserProfileImage%2Fi0FCZz2o1sZjjDwpobJyllW9mkr1%2Fyankee%20logo.png?alt=media&token=4c34cef3-5e7c-44ac-9094-4b3e6cd6b977', 
 'images/userProfileImage/i0FCZz2o1sZjjDwpobJyllW9mkr1/yankee logo.png', 'i0FCZz2o1sZjjDwpobJyllW9mkr1'
@@ -35,8 +35,8 @@ let user1Event = await events.createEvent('NYE BBall', 'Basketball',  '1001 Huds
 
 await events.signUpUser(user2Event._id.toString(), 'i0FCZz2o1sZjjDwpobJyllW9mkr1', 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23');
 await events.signUpUser(user2Event._id.toString(), 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1', 'fl4rIbWzTVOGS0n9ZWTpWlR8fp23');
-await events.addComment(user1Event._id, 'i0FCZz2o1sZjjDwpobJyllW9mkr1', 'smaida', "Looks like a lot of fun. I'll be there. I'll make sure to tell my friends.")
-await events.addComment(user1Event._id, 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1', 'cadecermak', "I've never played but I'll try!");
+await events.addComment(user2Event._id.toString(), 'i0FCZz2o1sZjjDwpobJyllW9mkr1', 'smaida', "Looks like a lot of fun. I'll be there. I'll make sure to tell my friends.")
+await events.addComment(user2Event._id.toString(), 'X1JsjAeyCdgf7QkYhz6FaAUNNrx1', 'cadecermak', "I've never played but I'll try!");
 
 console.log("Done seeding database");
 
