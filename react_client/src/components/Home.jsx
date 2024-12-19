@@ -116,6 +116,10 @@ function Home() {
           eventOrganizer: eventOrganizer,
         }
       );
+      setUserInfo((prev) => ({
+        ...prev,
+        eventsAttending: [...prev.eventsAttending, eventId],
+      }));
 
       setOtherEvents((prev) => prev.filter((event) => event._id !== eventId));
       alert("You are now attending the event!");
@@ -139,6 +143,10 @@ function Home() {
       setAttendingEvents((prev) =>
         prev.filter((event) => event._id !== eventId)
       );
+      setUserInfo((prev) => ({
+        ...prev,
+        eventsAttending: prev.eventsAttending.filter((id) => id !== eventId),
+      }));
       alert("You are no longer attending the event!");
     } catch (error) {
       console.error(`Error signing up for event: ${error.message}`);
