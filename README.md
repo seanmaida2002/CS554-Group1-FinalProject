@@ -14,12 +14,12 @@ Our project is a web application designed to help users find and connect with ot
 By fostering communication and collaboration, this platform aims to build a stronger sense of community through shared sports activities.
 
 ## Hosting Information
-Both the frontend and backend of the application are hosted on servers, allowing users to access the website via a link.
+Both the frontend and backend of the application are hosted on AWS Servers, allowing users to access the website via a link.
 
 ### Hosted Frontend Link
 Access the hosted frontend here: [Frontend Link](http://huddleupcs554.s3-website.us-east-2.amazonaws.com)
 
-For users who want to run the frontend locally, instructions are provided below.
+For users who want to run the frontend and the backend locally, instructions are provided below.
 
 ## Local Development Setup
 ### Prerequisites
