@@ -17,7 +17,7 @@ By fostering communication and collaboration, this platform aims to build a stro
 Both the frontend and backend of the application are hosted on servers, allowing users to access the website via a link.
 
 ### Hosted Frontend Link
-Access the hosted frontend here: [Frontend Link](#)
+Access the hosted frontend here: [Frontend Link](http://huddleupcs554.s3-website.us-east-2.amazonaws.com)
 
 For users who want to run the frontend locally, instructions are provided below.
 
@@ -27,21 +27,39 @@ For users who want to run the frontend locally, instructions are provided below.
 - A code editor like [VS Code](https://code.visualstudio.com/).
 
 ### Steps to Run Frontend Locally
-1. Clone the repository:
+## First Step is to make sure that Redis is running
+1. **Go into a termal and run:**
+    ```bash
+    redis-cli
+    ```
+2. **Enter 'Ping' into the termainl and hit 'enter'. Redis should reply back with 'PONG'**
+## Running the Server
+
+1. **Navigate to the server directory:**
    ```bash
-   git clone https://github.com/seanmaida2002/CS554-Group1-FinalProject.git
+   cd server
    ```
-2. Navigate to the frontend directory:
+2. **Install all dependencies:**
     ```bash
+    npm i
+    ```
+3. **Start Server:**
+    ```bash
+    npm start
+    ```
+
+## Running the Client
+
+1. **Navigate to the client directory:**
+   ```bash
     cd react_client
-    ```
-3. Install all the needed dependencies:
+   ```
+2. **Install all dependencies:**
     ```bash
-    npm install
+    npm i
     ```
-4. Start the Frontend:
+3. **Start Client:**
     ```bash
     npm run dev
     ```
-5. Use the link provided in the terminal to access the website. The frontend will automatically be connected to the backend that is hosted on AWS.
 
