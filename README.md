@@ -15,9 +15,7 @@ By fostering communication and collaboration, this platform aims to build a stro
 
 ## Hosting Information
 Both the frontend and backend of the application are hosted on AWS Servers, allowing users to access the website via a link.
-
-### Hosted Frontend Link
-Access the hosted frontend here: [Frontend Link](http://huddleupcs554.s3-website.us-east-2.amazonaws.com)
+Access the hosted version here: [Link](http://huddleupcs554.s3-website.us-east-2.amazonaws.com)
 
 For users who want to run the frontend and the backend locally, instructions are provided below.
 
